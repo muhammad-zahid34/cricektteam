@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Squad & Comprehensive Match Portal</title>
+    <title>Cricket Squad & Match Performance Portal</title>
     <style>
         :root {
             --bg-main: #0d1117;
@@ -13,93 +13,83 @@
             --accent-gold: #e5a93c;
             --accent-green: #2ea043;
             --accent-red: #da3633;
-            --accent-blue: #388bfd;
             --text-primary: #f0f6fc;
             --text-secondary: #8b949e;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-primary); padding-bottom: 60px; min-height: 100vh; }
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 15px; }
+        body { background-color: var(--bg-main); color: var(--text-primary); padding-bottom: 50px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
 
         header {
             background-color: var(--bg-card);
             border-bottom: 2px solid var(--border-color);
             padding: 15px 0;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .brand-title { color: var(--accent-gold); font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
-        .developer-badge { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-input); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border-color); display: inline-block; margin-top: 4px; }
+        .brand-title { color: var(--accent-gold); font-size: 1.5rem; font-weight: bold; }
+        .developer-badge { font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-input); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color); }
         .dev-name { color: var(--accent-gold); font-weight: bold; }
 
         .btn {
             background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color);
             padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
-            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
-        .btn:hover { background-color: #30363d; border-color: var(--text-secondary); }
+        .btn:hover { background-color: #30363d; }
         .btn-gold { background-color: var(--accent-gold); color: #000; border: none; }
-        .btn-gold:hover { background-color: #f0b446; }
         .btn-green { background-color: var(--accent-green); color: #fff; border: none; }
-        .btn-green:hover { background-color: #38b251; }
         .btn-danger { background-color: var(--accent-red); color: #fff; border: none; }
-        .btn-danger:hover { background-color: #e54441; }
-        .btn-blue { background-color: var(--accent-blue); color: #fff; border: none; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; overflow-x: auto; }
-        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 6px; white-space: nowrap; transition: all 0.2s; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; overflow-x: auto; }
+        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; border-radius: 6px; white-space: nowrap; }
         .tab-btn.active { background-color: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--border-color); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .admin-banner { background: #1c2128; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .admin-banner { background: #1c2128; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
-        .pitch-container { background: linear-gradient(180deg, #0d381d 0%, #051e0e 100%); border: 3px solid var(--accent-green); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: inset 0 0 30px rgba(0,0,0,0.6); }
-        .pitch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+        .pitch-container { background: linear-gradient(180deg, #0e331c 0%, #051a0d 100%); border: 3px solid var(--accent-green); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
+        .pitch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
 
         .pitch-card {
-            background: rgba(22, 27, 34, 0.92); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 12px; width: 145px; text-align: center; position: relative; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background: rgba(22, 27, 34, 0.95); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 12px; width: 140px; text-align: center; position: relative;
         }
         .pitch-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold); margin-bottom: 6px; }
-        .pitch-card h4 { font-size: 0.88rem; color: #fff; }
+        .pitch-card h4 { font-size: 0.85rem; color: #fff; }
         .pitch-card p { font-size: 0.75rem; color: var(--accent-gold); }
 
         .squad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .squad-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
-        .squad-header { display: flex; gap: 15px; align-items: center; margin-bottom: 12px; }
+        .squad-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; display: flex; gap: 15px; flex-direction: column; }
+        .squad-header { display: flex; gap: 15px; align-items: center; }
         .squad-card img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
 
-        .status-badge { display: inline-block; font-size: 0.72rem; padding: 3px 10px; border-radius: 12px; font-weight: bold; margin-top: 4px; }
+        .status-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-top: 5px; }
         .status-available { background: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid #2ea043; }
         .status-injured { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
         .status-bench { background: rgba(229, 169, 60, 0.2); color: #e5a93c; border: 1px solid #e5a93c; }
 
-        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px; }
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
 
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
-        th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; }
-        th { background: var(--bg-input); color: var(--accent-gold); font-weight: 600; white-space: nowrap; }
-        tr:hover { background-color: rgba(255,255,255,0.02); }
+        .data-table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow-x: auto; margin-bottom: 25px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        th { background-color: var(--bg-input); color: var(--accent-gold); }
 
-        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.88); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 100%; max-width: 900px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 90%; max-width: 550px; padding: 25px; max-height: 90vh; overflow-y: auto; }
 
-        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
         .form-group label { font-size: 0.85rem; color: var(--text-secondary); }
-        .form-group input, .form-group select { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px 12px; border-radius: 6px; outline: none; font-size: 0.9rem; }
-        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
+        .form-group input, .form-group select { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 6px; outline: none; }
 
-        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+        .upload-btn-wrapper { background: var(--bg-input); border: 2px dashed var(--accent-gold); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 10px; }
 
-        .score-entry-row { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.2fr; gap: 6px; align-items: center; background: var(--bg-input); padding: 8px; border-radius: 6px; margin-bottom: 8px; border: 1px solid var(--border-color); }
-        .score-entry-row input, .score-entry-row select { padding: 6px; font-size: 0.85rem; }
-
-        footer { text-align: center; padding: 25px 0; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; font-size: 0.9rem; }
+        footer { text-align: center; padding: 25px 0; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; }
         footer span { color: var(--accent-gold); font-weight: bold; }
     </style>
 </head>
@@ -109,11 +99,11 @@
     <header>
         <div class="nav-wrapper">
             <div>
-                <div class="brand-title">🏏 Cricket Squad & Comprehensive Match Portal</div>
-                <div class="developer-badge">Website Developed by <span class="dev-name">Muhammad Zahid</span></div>
+                <div class="brand-title">🏏 Team Squad & Match Portal</div>
+                <div class="developer-badge">Developed by <span class="dev-name">Muhammad Zahid</span></div>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span id="role-indicator" style="font-size: 0.85rem; color: var(--text-secondary);">Role: Visitor</span>
+            <div>
+                <span id="role-indicator" style="font-size: 0.85rem; color: var(--text-secondary); margin-right: 10px;">Role: Visitor</span>
                 <button class="btn btn-gold" id="login-btn" onclick="toggleAdminLogin()">Admin Login</button>
             </div>
         </div>
@@ -121,85 +111,105 @@
 
     <div class="admin-banner">
         <div>
-            <strong>Status: <span id="current-mode-text">Visitor Mode (Read-Only)</span></strong>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Default Admin Password: <strong>admin</strong> (You can change it inside Admin Panel anytime).</p>
+            <strong>Status: <span id="current-mode-text">Visitor (Read-Only)</span></strong>
+            <p style="font-size: 0.8rem; color: var(--text-secondary);">Log in with password "admin" to edit squad, change photos, or enter match scores.</p>
         </div>
         <div id="backup-controls" style="display: none; gap: 8px; flex-wrap: wrap;">
-            <button class="btn btn-gold" onclick="openChangePassModal()">🔑 Change Password</button>
-            <button class="btn btn-green" onclick="exportDataBackup()">📥 Export Backup (JSON)</button>
-            <button class="btn btn-blue" onclick="document.getElementById('import-file').click()">📤 Import Backup</button>
-            <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importDataBackup(event)">
+            <button class="btn btn-gold" onclick="openPassChangeModal()">🔑 Change Password</button>
+            <button class="btn btn-green" onclick="exportDataBackup()">📥 Export Backup</button>
+            <button class="btn" onclick="document.getElementById('import-file').click()">📤 Import</button>
+            <input type="file" id="import-file" style="display: none;" onchange="importDataBackup(event)">
         </div>
     </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('pitch-tab', this)">🟢 Playing 11 Field</button>
-        <button class="tab-btn" onclick="switchTab('squad-tab', this)">📋 Squad Roster & Edit</button>
-        <button class="tab-btn" onclick="switchTab('stats-tab', this)">📊 Cumulative Player Stats</button>
-        <button class="tab-btn" onclick="switchTab('matches-tab', this)">🏏 Match Scorecards & Entry</button>
+        <button class="tab-btn active" onclick="switchTab('pitch-tab', this)">🟢 Playing 11 Ground</button>
+        <button class="tab-btn" onclick="switchTab('squad-tab', this)">📋 Full Squad (15 Players)</button>
+        <button class="tab-btn" onclick="switchTab('matches-tab', this)">📊 Match Scorecards & Recording</button>
+        <button class="tab-btn" onclick="switchTab('stats-tab', this)">⭐ Player Career Stats</button>
     </div>
 
-    <!-- TAB 1: Pitch Field -->
+    <!-- TAB 1: Playing 11 Ground -->
     <div id="pitch-tab" class="tab-content active">
         <div class="pitch-container">
-            <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">🟢 Playing 11 On Field (<span id="p11-count">11</span> Selected)</h2>
+            <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">🟢 Playing 11 Tactical Field (<span id="p11-count">11</span> Selected)</h2>
             <div class="pitch-grid" id="pitch-display"></div>
         </div>
     </div>
 
-    <!-- TAB 2: Squad -->
+    <!-- TAB 2: Full Squad -->
     <div id="squad-tab" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h2>Complete Squad Roster</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Squad Roster & Editing</h2>
             <button class="btn btn-gold admin-only" style="display: none;" onclick="openAddPlayerModal()">+ Add New Player</button>
         </div>
         <div class="squad-grid" id="squad-cards-container"></div>
     </div>
 
-    <!-- TAB 3: Career Stats -->
+    <!-- TAB 3: Match Recording & History -->
+    <div id="matches-tab" class="tab-content">
+        <div class="admin-only" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+            <h3 style="color: var(--accent-gold); margin-bottom: 15px;">📝 Record Match Performance</h3>
+            <form onsubmit="handleRecordMatch(event)">
+                <div class="form-grid">
+                    <div class="form-group"><label>Match Date</label><input type="date" id="m-date" required></div>
+                    <div class="form-group"><label>Opponent</label><input type="text" id="m-opponent" placeholder="e.g. Lahore Kings" required></div>
+                    <div class="form-group"><label>Venue</label><input type="text" id="m-venue" placeholder="e.g. National Stadium" required></div>
+                    <div class="form-group">
+                        <label>Result</label>
+                        <select id="m-result"><option>Won</option><option>Lost</option><option>Tied</option></select>
+                    </div>
+                </div>
+
+                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🏏 Batting Performers (Auto Strike Rate)</h4>
+                <div id="batting-inputs"></div>
+
+                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🎯 Bowling Performers (Auto Economy)</h4>
+                <div id="bowling-inputs"></div>
+
+                <button type="submit" class="btn btn-green" style="width: 100%; margin-top: 20px; font-size: 1rem;">Save Scorecard & Update Career Stats</button>
+            </form>
+        </div>
+
+        <h2>Match Scorecards History</h2>
+        <div id="match-history-list" style="margin-top: 15px;"></div>
+    </div>
+
+    <!-- TAB 4: Career Stats -->
     <div id="stats-tab" class="tab-content">
-        <h2 style="margin-bottom: 15px;">Player Cumulative Career Statistics</h2>
-        <div style="overflow-x: auto;">
+        <h2 style="margin-bottom: 20px;">Cumulative Player Career Statistics</h2>
+        <div class="data-table-container">
             <table>
                 <thead>
                     <tr>
-                        <th>Player Name</th>
+                        <th>Player</th>
                         <th>Category</th>
                         <th>Matches</th>
                         <th>Runs</th>
-                        <th>High Score</th>
-                        <th>Bat SR</th>
+                        <th>Highest</th>
+                        <th>Bat Avg</th>
+                        <th>Strike Rate</th>
                         <th>Wickets</th>
-                        <th>Best Bowling</th>
-                        <th>Econ Rate</th>
-                        <th>Status</th>
+                        <th>Economy</th>
                     </tr>
                 </thead>
-                <tbody id="career-stats-body"></tbody>
+                <tbody id="career-stats-tbody"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- TAB 4: Match Scorecards -->
-    <div id="matches-tab" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-            <h2>Match Records & Detailed Scorecards</h2>
-            <button class="btn btn-gold admin-only" style="display: none;" onclick="openAddMatchModal()">+ Record Complete Match Scorecard</button>
-        </div>
-        <div id="match-records-container"></div>
-    </div>
-
     <footer>
-        <p>Cricket Squad & Comprehensive Match Portal &copy; 2026 | Website Developed by <span>Muhammad Zahid</span></p>
+        <p>Cricket Squad & Match Data Portal &copy; 2026 | Website Developed by <span>Muhammad Zahid</span></p>
     </footer>
 </div>
 
+<!-- Login Modal -->
 <div class="modal-backdrop" id="admin-modal">
-    <div class="modal-box" style="max-width: 420px;">
+    <div class="modal-box">
         <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Admin Login</h3>
         <div class="form-group">
-            <label>Admin Password</label>
-            <input type="password" id="admin-pass-input" placeholder="Default: admin">
+            <label>Password</label>
+            <input type="password" id="admin-pass-input" placeholder="Password">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="btn btn-gold" style="flex:1;" onclick="submitAdminLogin()">Login</button>
@@ -208,97 +218,51 @@
     </div>
 </div>
 
-<div class="modal-backdrop" id="change-pass-modal">
-    <div class="modal-box" style="max-width: 420px;">
+<!-- Password Change Modal -->
+<div class="modal-backdrop" id="pass-modal">
+    <div class="modal-box">
         <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Change Admin Password</h3>
         <div class="form-group">
-            <label>Current Password</label>
-            <input type="password" id="curr-pass-input">
-        </div>
-        <div class="form-group">
             <label>New Password</label>
-            <input type="password" id="new-pass-input">
+            <input type="password" id="new-pass-input" placeholder="Enter new password">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button class="btn btn-green" style="flex:1;" onclick="saveNewPassword()">Update Password</button>
-            <button class="btn" style="flex:1;" onclick="closeChangePassModal()">Cancel</button>
+            <button class="btn" style="flex:1;" onclick="document.getElementById('pass-modal').classList.remove('active')">Cancel</button>
         </div>
     </div>
 </div>
 
+<!-- Edit Player Modal -->
 <div class="modal-backdrop" id="edit-player-modal">
-    <div class="modal-box" style="max-width: 500px;">
-        <h3 style="color: var(--accent-gold); margin-bottom: 15px;" id="modal-player-title">Edit Player Profile</h3>
-        <input type="hidden" id="edit-player-id">
-        <div class="form-group">
-            <label>Player Full Name</label>
-            <input type="text" id="edit-player-name" placeholder="e.g. Babar Azam">
-        </div>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Category</label>
-                <select id="edit-player-category">
-                    <option value="Top-Order Batter">Top-Order Batter</option>
-                    <option value="Middle-Order Batter">Middle-Order Batter</option>
-                    <option value="Wicket-Keeper">Wicket-Keeper</option>
-                    <option value="All-Rounder">All-Rounder</option>
-                    <option value="Fast Bowler">Fast Bowler</option>
-                    <option value="Spin Bowler">Spin Bowler</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Leadership Role</label>
-                <select id="edit-player-role">
-                    <option value="">None</option>
-                    <option value="C">Captain (C)</option>
-                    <option value="VC">Vice-Captain (VC)</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group">
-            <label>Image URL</label>
-            <input type="text" id="edit-player-img" placeholder="https://images.unsplash.com/...">
-        </div>
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn btn-green" style="flex:1;" onclick="savePlayerEdit()">Save Player Profile</button>
-            <button class="btn" style="flex:1;" onclick="closeEditModal()">Cancel</button>
-        </div>
-    </div>
-</div>
-
-<div class="modal-backdrop" id="add-match-modal">
     <div class="modal-box">
-        <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Record Detailed Match Scorecard</h3>
-        <div class="form-row">
-            <div class="form-group">
-                <label>Opponent Team</label>
-                <input type="text" id="match-opponent" placeholder="e.g. Australia">
-            </div>
-            <div class="form-group">
-                <label>Match Date</label>
-                <input type="date" id="match-date">
-            </div>
-            <div class="form-group">
-                <label>Match Result</label>
-                <input type="text" id="match-result" placeholder="e.g. Won by 24 runs">
-            </div>
+        <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Edit Player Details & Photo</h3>
+        <input type="hidden" id="edit-player-id">
+        <div class="form-group"><label>Player Name</label><input type="text" id="edit-player-name"></div>
+        <div class="form-group">
+            <label>Category</label>
+            <select id="edit-player-category">
+                <option value="Top-Order Batter">Top-Order Batter</option>
+                <option value="Middle-Order Batter">Middle-Order Batter</option>
+                <option value="Wicket-Keeper">Wicket-Keeper</option>
+                <option value="All-Rounder">All-Rounder</option>
+                <option value="Fast Bowler">Fast Bowler</option>
+                <option value="Spin Bowler">Spin Bowler</option>
+            </select>
         </div>
-
-        <h4 style="color: var(--accent-gold); margin: 15px 0 8px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🏏 Batting Scorecard (Per Player)</h4>
-        <div style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; display:grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1.2fr; gap:6px;">
-            <span>Player</span><span>Runs</span><span>Balls</span><span>4s</span><span>6s</span><span>Status</span><span>Strike Rate</span>
+        <div class="form-group">
+            <label>Player Photo</label>
+            <div class="upload-btn-wrapper" onclick="document.getElementById('gallery-input').click()">
+                <span style="color: var(--accent-gold); font-weight: bold;">📁 Choose Photo from Device / Gallery</span>
+                <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Select image from internal storage</p>
+            </div>
+            <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handleGalleryUpload(event)">
+            <label style="margin-top: 5px;">Or Photo URL</label>
+            <input type="text" id="edit-player-img" placeholder="https://...">
         </div>
-        <div id="batting-entry-list"></div>
-
-        <h4 style="color: var(--accent-gold); margin: 20px 0 8px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;">🎯 Bowling Scorecard (Per Player)</h4>
-        <div style="font-size:0.78rem; color:var(--text-secondary); margin-bottom:8px; display:grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2fr; gap:6px;">
-            <span>Player</span><span>Overs</span><span>Maidens</span><span>Runs</span><span>Wickets</span><span>Economy</span>
-        </div>
-        <div id="bowling-entry-list"></div>
-
-        <div style="display: flex; gap: 10px; margin-top: 25px;">
-            <button class="btn btn-green" style="flex:1;" onclick="submitFullMatchScorecard()">Submit Complete Scorecard</button>
-            <button class="btn" style="flex:1;" onclick="closeMatchModal()">Cancel</button>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn btn-green" style="flex:1;" onclick="savePlayerEdit()">Save Changes</button>
+            <button class="btn" style="flex:1;" onclick="closeEditModal()">Cancel</button>
         </div>
     </div>
 </div>
@@ -322,40 +286,23 @@
         { id: 15, name: "Wasim Jr", category: "Fast Bowler", isPlaying11: false, roleBadge: "", status: "Injured", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop" }
     ];
 
-    const defaultMatches = [
-        {
-            id: 101,
-            opponent: "Australia",
-            date: "2026-02-14",
-            result: "Won by 18 Runs",
-            battingScorecard: [
-                { name: "Babar Azam", runs: 78, balls: 52, fours: 8, sixes: 2, outStatus: "Out", sr: 150.0 },
-                { name: "Mohammad Rizwan", runs: 45, balls: 34, fours: 4, sixes: 1, outStatus: "Out", sr: 132.35 },
-                { name: "Fakhar Zaman", runs: 32, balls: 18, fours: 3, sixes: 2, outStatus: "Out", sr: 177.78 }
-            ],
-            bowlingScorecard: [
-                { name: "Shaheen Afridi", overs: 4, maidens: 0, runs: 28, wickets: 3, econ: 7.0 },
-                { name: "Haris Rauf", overs: 4, maidens: 0, runs: 34, wickets: 2, econ: 8.5 },
-                { name: "Naseem Shah", overs: 4, maidens: 1, runs: 22, wickets: 2, econ: 5.5 }
-            ]
-        }
-    ];
-
     let players = JSON.parse(localStorage.getItem('mz_cricket_players')) || defaultPlayers;
-    let matches = JSON.parse(localStorage.getItem('mz_cricket_matches')) || defaultMatches;
-    let storedAdminPass = localStorage.getItem('mz_admin_pass') || 'admin';
+    let matches = JSON.parse(localStorage.getItem('mz_cricket_matches')) || [];
+    let adminPassword = localStorage.getItem('mz_admin_pass') || 'admin';
     let isAdmin = false;
 
     function initApp() {
         renderPitch();
         renderSquad();
-        renderStats();
-        renderMatches();
+        renderMatchInputs();
+        renderMatchHistory();
+        renderCareerStats();
     }
 
     function saveData() {
         localStorage.setItem('mz_cricket_players', JSON.stringify(players));
         localStorage.setItem('mz_cricket_matches', JSON.stringify(matches));
+        localStorage.setItem('mz_admin_pass', adminPassword);
     }
 
     function switchTab(tabId, btn) {
@@ -370,11 +317,10 @@
             isAdmin = false;
             document.getElementById('role-indicator').innerText = "Role: Visitor";
             document.getElementById('login-btn').innerText = "Admin Login";
-            document.getElementById('current-mode-text').innerText = "Visitor Mode (Read-Only)";
+            document.getElementById('current-mode-text').innerText = "Visitor (Read-Only)";
             document.getElementById('backup-controls').style.display = 'none';
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
             renderSquad();
-            renderMatches();
         } else {
             document.getElementById('admin-modal').classList.add('active');
         }
@@ -383,39 +329,29 @@
     function closeAdminModal() { document.getElementById('admin-modal').classList.remove('active'); }
 
     function submitAdminLogin() {
-        if (document.getElementById('admin-pass-input').value === storedAdminPass) {
+        if (document.getElementById('admin-pass-input').value === adminPassword) {
             isAdmin = true;
             document.getElementById('role-indicator').innerText = "Role: Admin";
             document.getElementById('login-btn').innerText = "Logout Admin";
             document.getElementById('current-mode-text').innerText = "Admin Editing Enabled";
             document.getElementById('backup-controls').style.display = 'flex';
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             closeAdminModal();
             renderSquad();
-            renderMatches();
         } else {
             alert("Incorrect Admin Password!");
         }
     }
 
-    function openChangePassModal() { document.getElementById('change-pass-modal').classList.add('active'); }
-    function closeChangePassModal() { document.getElementById('change-pass-modal').classList.remove('active'); }
-
+    function openPassChangeModal() { document.getElementById('pass-modal').classList.add('active'); }
     function saveNewPassword() {
-        const curr = document.getElementById('curr-pass-input').value;
-        const newP = document.getElementById('new-pass-input').value.trim();
-        if (curr !== storedAdminPass) {
-            alert("Current password is incorrect!");
-            return;
+        const p = document.getElementById('new-pass-input').value;
+        if (p) {
+            adminPassword = p;
+            saveData();
+            document.getElementById('pass-modal').classList.remove('active');
+            alert("Password Changed Successfully!");
         }
-        if (!newP) {
-            alert("New password cannot be empty!");
-            return;
-        }
-        storedAdminPass = newP;
-        localStorage.setItem('mz_admin_pass', newP);
-        alert("Admin Password updated successfully!");
-        closeChangePassModal();
     }
 
     function renderPitch() {
@@ -425,8 +361,9 @@
 
         pitchContainer.innerHTML = p11.map(p => `
             <div class="pitch-card">
-                <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/161b22/e5a93c?text=${encodeURIComponent(p.name)}'">
-                <h4>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h4>
+                ${p.roleBadge ? `<span style="position:absolute; top:5px; right:5px; background:var(--accent-gold); color:#000; font-weight:bold; font-size:0.65rem; padding:2px 5px; border-radius:4px;">${p.roleBadge}</span>` : ''}
+                <img src="${p.img}" alt="${p.name}">
+                <h4>${p.name}</h4>
                 <p>${p.category}</p>
             </div>
         `).join('');
@@ -436,23 +373,21 @@
         const squadContainer = document.getElementById('squad-cards-container');
         squadContainer.innerHTML = players.map(p => `
             <div class="squad-card">
-                <div>
-                    <div class="squad-header">
-                        <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/161b22/e5a93c?text=${encodeURIComponent(p.name)}'">
-                        <div>
-                            <h3>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
-                            <p style="font-size: 0.85rem; color: var(--text-secondary);">${p.category}</p>
-                            <span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span>
-                        </div>
+                <div class="squad-header">
+                    <img src="${p.img}" alt="${p.name}">
+                    <div>
+                        <h3>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary);">${p.category}</p>
+                        <span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span>
                     </div>
                 </div>
                 ${isAdmin ? `
                     <div class="action-buttons admin-only">
-                        <button class="btn ${p.isPlaying11 ? 'btn-danger' : 'btn-green'}" style="flex:1;" onclick="togglePlaying11(${p.id})">
-                            ${p.isPlaying11 ? 'Remove 11' : 'Add to 11'}
+                        <button class="btn ${p.isPlaying11 ? 'btn-danger' : 'btn-green'}" onclick="togglePlaying11(${p.id})">
+                            ${p.isPlaying11 ? 'Remove from 11' : 'Add to Playing 11'}
                         </button>
-                        <button class="btn btn-gold" onclick="openEditModal(${p.id})">Edit</button>
-                        <button class="btn" onclick="toggleStatus(${p.id})">Status</button>
+                        <button class="btn btn-gold" onclick="openEditModal(${p.id})">Edit Info & Photo</button>
+                        <button class="btn" onclick="toggleStatus(${p.id})">Toggle Status</button>
                     </div>
                 ` : ''}
             </div>
@@ -462,13 +397,14 @@
     function togglePlaying11(id) {
         const p = players.find(x => x.id === id);
         if (!p.isPlaying11 && players.filter(x => x.isPlaying11).length >= 11) {
-            alert("Limit reached! Exactly 11 players can be in the Playing 11.");
+            alert("Already 11 players selected! Remove one first.");
             return;
         }
         p.isPlaying11 = !p.isPlaying11;
         saveData();
         renderPitch();
         renderSquad();
+        renderMatchInputs();
     }
 
     function toggleStatus(id) {
@@ -480,337 +416,207 @@
         renderSquad();
     }
 
-    function openAddPlayerModal() {
-        document.getElementById('modal-player-title').innerText = "Add New Player";
-        document.getElementById('edit-player-id').value = "";
-        document.getElementById('edit-player-name').value = "";
-        document.getElementById('edit-player-category').value = "Top-Order Batter";
-        document.getElementById('edit-player-role').value = "";
-        document.getElementById('edit-player-img').value = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop";
-        document.getElementById('edit-player-modal').classList.add('active');
-    }
-
     function openEditModal(id) {
         const p = players.find(x => x.id === id);
-        document.getElementById('modal-player-title').innerText = "Edit Player Profile";
         document.getElementById('edit-player-id').value = p.id;
         document.getElementById('edit-player-name').value = p.name;
         document.getElementById('edit-player-category').value = p.category;
-        document.getElementById('edit-player-role').value = p.roleBadge || "";
         document.getElementById('edit-player-img').value = p.img;
         document.getElementById('edit-player-modal').classList.add('active');
     }
 
     function closeEditModal() { document.getElementById('edit-player-modal').classList.remove('active'); }
 
-    function savePlayerEdit() {
-        const idVal = document.getElementById('edit-player-id').value;
-        const name = document.getElementById('edit-player-name').value.trim();
-        if (!name) { alert("Please enter player name!"); return; }
-
-        if (idVal) {
-            const p = players.find(x => x.id === parseInt(idVal));
-            p.name = name;
-            p.category = document.getElementById('edit-player-category').value;
-            p.roleBadge = document.getElementById('edit-player-role').value;
-            p.img = document.getElementById('edit-player-img').value;
-        } else {
-            const newPlayer = {
-                id: Date.now(),
-                name: name,
-                category: document.getElementById('edit-player-category').value,
-                isPlaying11: false,
-                roleBadge: document.getElementById('edit-player-role').value,
-                status: "Available",
-                img: document.getElementById('edit-player-img').value || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop"
-            };
-            players.push(newPlayer);
+    function handleGalleryUpload(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(evt) { document.getElementById('edit-player-img').value = evt.target.result; };
+            reader.readAsDataURL(file);
         }
+    }
+
+    function savePlayerEdit() {
+        const id = parseInt(document.getElementById('edit-player-id').value);
+        const p = players.find(x => x.id === id);
+        p.name = document.getElementById('edit-player-name').value;
+        p.category = document.getElementById('edit-player-category').value;
+        p.img = document.getElementById('edit-player-img').value;
         saveData();
         renderPitch();
         renderSquad();
-        renderStats();
         closeEditModal();
     }
 
-    function renderStats() {
-        const statsMap = {};
-        players.forEach(p => {
-            statsMap[p.name] = {
-                category: p.category,
-                status: p.status,
-                role: p.roleBadge,
-                matches: 0,
-                runs: 0,
-                balls: 0,
-                highScore: 0,
-                wickets: 0,
-                overs: 0,
-                runsConceded: 0,
-                bestWkts: 0,
-                bestRuns: 999
-            };
+    function renderMatchInputs() {
+        const p11 = players.filter(p => p.isPlaying11);
+        document.getElementById('batting-inputs').innerHTML = p11.map((p, i) => `
+            <div class="form-grid" style="align-items:center;">
+                <input type="text" value="${p.name}" readonly style="background:#161b22; font-weight:bold;">
+                <input type="number" id="bat-runs-${p.id}" placeholder="Runs" min="0" oninput="calcSR(${p.id})">
+                <input type="number" id="bat-balls-${p.id}" placeholder="Balls" min="0" oninput="calcSR(${p.id})">
+                <input type="number" id="bat-4s-${p.id}" placeholder="4s" min="0">
+                <input type="number" id="bat-6s-${p.id}" placeholder="6s" min="0">
+                <span id="bat-sr-${p.id}" style="color:var(--accent-gold); font-size:0.85rem; font-weight:bold;">SR: 0.00</span>
+            </div>
+        `).join('');
+
+        document.getElementById('bowling-inputs').innerHTML = p11.slice(5).map((p, i) => `
+            <div class="form-grid" style="align-items:center;">
+                <input type="text" value="${p.name}" readonly style="background:#161b22; font-weight:bold;">
+                <input type="number" id="bowl-overs-${p.id}" placeholder="Overs" step="0.1" min="0" oninput="calcEcon(${p.id})">
+                <input type="number" id="bowl-runs-${p.id}" placeholder="Runs Given" min="0" oninput="calcEcon(${p.id})">
+                <input type="number" id="bowl-wkts-${p.id}" placeholder="Wickets" min="0">
+                <span id="bowl-econ-${p.id}" style="color:var(--accent-gold); font-size:0.85rem; font-weight:bold;">Econ: 0.00</span>
+            </div>
+        `).join('');
+    }
+
+    function calcSR(id) {
+        const r = parseFloat(document.getElementById(`bat-runs-${id}`).value) || 0;
+        const b = parseFloat(document.getElementById(`bat-balls-${id}`).value) || 0;
+        const sr = b > 0 ? ((r / b) * 100).toFixed(2) : '0.00';
+        document.getElementById(`bat-sr-${id}`).innerText = `SR: ${sr}`;
+    }
+
+    function calcEcon(id) {
+        const o = parseFloat(document.getElementById(`bowl-overs-${id}`).value) || 0;
+        const r = parseFloat(document.getElementById(`bowl-runs-${id}`).value) || 0;
+        const econ = o > 0 ? (r / o).toFixed(2) : '0.00';
+        document.getElementById(`bowl-econ-${id}`).innerText = `Econ: ${econ}`;
+    }
+
+    function handleRecordMatch(e) {
+        e.preventDefault();
+        const p11 = players.filter(p => p.isPlaying11);
+        const battingData = [];
+        const bowlingData = [];
+
+        p11.forEach(p => {
+            const r = parseInt(document.getElementById(`bat-runs-${p.id}`)?.value) || 0;
+            const b = parseInt(document.getElementById(`bat-balls-${p.id}`)?.value) || 0;
+            const f4 = parseInt(document.getElementById(`bat-4s-${p.id}`)?.value) || 0;
+            const s6 = parseInt(document.getElementById(`bat-6s-${p.id}`)?.value) || 0;
+            if (b > 0 || r > 0) battingData.push({ playerId: p.id, name: p.name, runs: r, balls: b, fours: f4, sixes: s6, sr: b > 0 ? ((r/b)*100).toFixed(2) : '0.00' });
+
+            const o = parseFloat(document.getElementById(`bowl-overs-${p.id}`)?.value) || 0;
+            const br = parseInt(document.getElementById(`bowl-runs-${p.id}`)?.value) || 0;
+            const w = parseInt(document.getElementById(`bowl-wkts-${p.id}`)?.value) || 0;
+            if (o > 0) bowlingData.push({ playerId: p.id, name: p.name, overs: o, runs: br, wickets: w, econ: (br/o).toFixed(2) });
         });
 
-        matches.forEach(m => {
-            if (m.battingScorecard) {
-                m.battingScorecard.forEach(b => {
-                    if (!statsMap[b.name]) statsMap[b.name] = { category: "Player", status: "Available", role: "", matches: 0, runs: 0, balls: 0, highScore: 0, wickets: 0, overs: 0, runsConceded: 0, bestWkts: 0, bestRuns: 999 };
-                    statsMap[b.name].matches += 1;
-                    statsMap[b.name].runs += b.runs;
-                    statsMap[b.name].balls += b.balls;
-                    if (b.runs > statsMap[b.name].highScore) statsMap[b.name].highScore = b.runs;
-                });
-            }
+        const newMatch = {
+            id: Date.now(),
+            date: document.getElementById('m-date').value,
+            opponent: document.getElementById('m-opponent').value,
+            venue: document.getElementById('m-venue').value,
+            result: document.getElementById('m-result').value,
+            batting: battingData,
+            bowling: bowlingData
+        };
 
-            if (m.bowlingScorecard) {
-                m.bowlingScorecard.forEach(bw => {
-                    if (!statsMap[bw.name]) statsMap[bw.name] = { category: "Player", status: "Available", role: "", matches: 0, runs: 0, balls: 0, highScore: 0, wickets: 0, overs: 0, runsConceded: 0, bestWkts: 0, bestRuns: 999 };
-                    statsMap[bw.name].wickets += bw.wickets;
-                    statsMap[bw.name].overs += bw.overs;
-                    statsMap[bw.name].runsConceded += bw.runs;
+        matches.push(newMatch);
+        saveData();
+        renderMatchHistory();
+        renderCareerStats();
+        alert("Match Performance Scorecard Saved Successfully!");
+    }
 
-                    if (bw.wickets > statsMap[bw.name].bestWkts || (bw.wickets === statsMap[bw.name].bestWkts && bw.runs < statsMap[bw.name].bestRuns)) {
-                        statsMap[bw.name].bestWkts = bw.wickets;
-                        statsMap[bw.name].bestRuns = bw.runs;
-                    }
-                });
-            }
-        });
+    function renderMatchHistory() {
+        const history = document.getElementById('match-history-list');
+        if (matches.length === 0) {
+            history.innerHTML = `<p style="color:var(--text-secondary);">No matches recorded yet.</p>`;
+            return;
+        }
 
-        const statsBody = document.getElementById('career-stats-body');
-        statsBody.innerHTML = Object.keys(statsMap).map(pName => {
-            const s = statsMap[pName];
-            const batSR = s.balls > 0 ? ((s.runs / s.balls) * 100).toFixed(1) : '0.0';
-            const econ = s.overs > 0 ? (s.runsConceded / s.overs).toFixed(2) : '0.00';
-            const bestB = s.bestWkts > 0 ? `${s.bestWkts}/${s.bestRuns}` : '0/0';
+        history.innerHTML = matches.map(m => `
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:15px; border-radius:10px; margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                    <h3 style="color:var(--accent-gold);">vs ${m.opponent}</h3>
+                    <span style="font-weight:bold; color:${m.result === 'Won' ? 'var(--accent-green)' : 'var(--accent-red)'};">${m.result}</span>
+                </div>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:10px;">📅 Date: ${m.date} | 📍 Venue: ${m.venue}</p>
+
+                <h4 style="color:var(--accent-gold); font-size:0.85rem; margin-top:10px;">🏏 Batting</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                    ${m.batting.map(b => `<span style="background:var(--bg-input); padding:4px 8px; border-radius:4px; font-size:0.8rem;">${b.name}: <b>${b.runs}</b> (${b.balls}b) SR:${b.sr}</span>`).join('')}
+                </div>
+
+                <h4 style="color:var(--accent-gold); font-size:0.85rem; margin-top:10px;">🎯 Bowling</h4>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                    ${m.bowling.map(bw => `<span style="background:var(--bg-input); padding:4px 8px; border-radius:4px; font-size:0.8rem;">${bw.name}: <b>${bw.wickets}/${bw.runs}</b> (${bw.overs}ov) Econ:${bw.econ}</span>`).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderCareerStats() {
+        const tbody = document.getElementById('career-stats-tbody');
+        tbody.innerHTML = players.map(p => {
+            let totalRuns = 0, totalBalls = 0, highest = 0, totalWkts = 0, totalOvers = 0, totalBowlRuns = 0, playedMatches = 0;
+
+            matches.forEach(m => {
+                let playedInMatch = false;
+                const bat = m.batting.find(b => b.playerId === p.id);
+                if (bat) {
+                    playedInMatch = true;
+                    totalRuns += bat.runs;
+                    totalBalls += bat.balls;
+                    if (bat.runs > highest) highest = bat.runs;
+                }
+                const bowl = m.bowling.find(bw => bw.playerId === p.id);
+                if (bowl) {
+                    playedInMatch = true;
+                    totalWkts += bowl.wickets;
+                    totalOvers += bowl.overs;
+                    totalBowlRuns += bowl.runs;
+                }
+                if (playedInMatch) playedMatches++;
+            });
+
+            const sr = totalBalls > 0 ? ((totalRuns / totalBalls) * 100).toFixed(2) : '0.00';
+            const econ = totalOvers > 0 ? (totalBowlRuns / totalOvers).toFixed(2) : '0.00';
 
             return `
                 <tr>
-                    <td style="font-weight:600; color:#fff;">${pName} ${s.role ? `(${s.role})` : ''}</td>
-                    <td>${s.category}</td>
-                    <td>${s.matches}</td>
-                    <td style="color:var(--accent-gold); font-weight:bold;">${s.runs}</td>
-                    <td>${s.highScore}</td>
-                    <td style="color:var(--accent-blue);">${batSR}</td>
-                    <td style="color:var(--accent-green); font-weight:bold;">${s.wickets}</td>
-                    <td>${bestB}</td>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.category}</td>
+                    <td>${playedMatches}</td>
+                    <td>${totalRuns}</td>
+                    <td>${highest}</td>
+                    <td>${playedMatches > 0 ? (totalRuns / playedMatches).toFixed(2) : '0.00'}</td>
+                    <td>${sr}</td>
+                    <td>${totalWkts}</td>
                     <td>${econ}</td>
-                    <td><span class="status-badge ${s.status === 'Available' ? 'status-available' : s.status === 'Injured' ? 'status-injured' : 'status-bench'}">${s.status}</span></td>
                 </tr>
             `;
         }).join('');
     }
 
-    function renderMatches() {
-        const matchContainer = document.getElementById('match-records-container');
-        if (matches.length === 0) {
-            matchContainer.innerHTML = `<p style="color:var(--text-secondary);">No match scorecards recorded yet.</p>`;
-            return;
-        }
-
-        matchContainer.innerHTML = matches.map(m => `
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:20px; margin-bottom:20px;">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:15px;">
-                    <div>
-                        <h3 style="color:var(--accent-gold); font-size:1.2rem;">Pakistan vs ${m.opponent}</h3>
-                        <p style="font-size:0.85rem; color:var(--text-secondary);">${m.date}</p>
-                    </div>
-                    <span style="background:var(--bg-input); padding:6px 14px; border-radius:12px; font-weight:bold; font-size:0.88rem; border:1px solid var(--border-color); color:var(--accent-green);">${m.result}</span>
-                </div>
-
-                ${m.battingScorecard && m.battingScorecard.length ? `
-                    <h5 style="color:var(--accent-gold); margin-bottom:8px;">🏏 Batting Performance</h5>
-                    <div style="overflow-x:auto; margin-bottom:15px;">
-                        <table>
-                            <thead>
-                                <tr><th>Batter</th><th>Runs</th><th>Balls</th><th>4s</th><th>6s</th><th>Status</th><th>Strike Rate</th></tr>
-                            </thead>
-                            <tbody>
-                                ${m.battingScorecard.map(b => `
-                                    <tr>
-                                        <td><strong>${b.name}</strong></td>
-                                        <td style="color:var(--accent-gold); font-weight:bold;">${b.runs}</td>
-                                        <td>${b.balls}</td>
-                                        <td>${b.fours}</td>
-                                        <td>${b.sixes}</td>
-                                        <td>${b.outStatus}</td>
-                                        <td style="color:var(--accent-blue);">${b.sr}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : ''}
-
-                ${m.bowlingScorecard && m.bowlingScorecard.length ? `
-                    <h5 style="color:var(--accent-gold); margin-bottom:8px;">🎯 Bowling Performance</h5>
-                    <div style="overflow-x:auto;">
-                        <table>
-                            <thead>
-                                <tr><th>Bowler</th><th>Overs</th><th>Maidens</th><th>Runs</th><th>Wickets</th><th>Economy</th></tr>
-                            </thead>
-                            <tbody>
-                                ${m.bowlingScorecard.map(bw => `
-                                    <tr>
-                                        <td><strong>${bw.name}</strong></td>
-                                        <td>${bw.overs}</td>
-                                        <td>${bw.maidens}</td>
-                                        <td>${bw.runs}</td>
-                                        <td style="color:var(--accent-green); font-weight:bold;">${bw.wickets}</td>
-                                        <td>${bw.econ}</td>
-                                    </tr>
-                                `).join('')}
-                            </tbody>
-                        </table>
-                    </div>
-                ` : ''}
-            </div>
-        `).join('');
-    }
-
-    function openAddMatchModal() {
-        document.getElementById('match-opponent').value = "";
-        document.getElementById('match-date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('match-result').value = "";
-
-        const batList = document.getElementById('batting-entry-list');
-        const bowlList = document.getElementById('bowling-entry-list');
-
-        batList.innerHTML = players.map((p, idx) => `
-            <div class="score-entry-row">
-                <span style="font-weight:600; color:#fff;">${p.name}</span>
-                <input type="number" id="bat-runs-${idx}" value="0" placeholder="Runs" oninput="calcBatSR(${idx})">
-                <input type="number" id="bat-balls-${idx}" value="0" placeholder="Balls" oninput="calcBatSR(${idx})">
-                <input type="number" id="bat-4s-${idx}" value="0" placeholder="4s">
-                <input type="number" id="bat-6s-${idx}" value="0" placeholder="6s">
-                <select id="bat-out-${idx}">
-                    <option value="Out">Out</option>
-                    <option value="Not Out">Not Out</option>
-                    <option value="DNB">DNB</option>
-                </select>
-                <span id="bat-sr-${idx}" style="color:var(--accent-blue); font-weight:bold;">0.0</span>
-            </div>
-        `).join('');
-
-        bowlList.innerHTML = players.map((p, idx) => `
-            <div class="score-entry-row" style="grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1.2fr;">
-                <span style="font-weight:600; color:#fff;">${p.name}</span>
-                <input type="number" step="0.1" id="bowl-overs-${idx}" value="0" placeholder="Overs" oninput="calcBowlEcon(${idx})">
-                <input type="number" id="bowl-maidens-${idx}" value="0" placeholder="Maidens">
-                <input type="number" id="bowl-runs-${idx}" value="0" placeholder="Runs" oninput="calcBowlEcon(${idx})">
-                <input type="number" id="bowl-wkts-${idx}" value="0" placeholder="Wickets">
-                <span id="bowl-econ-${idx}" style="color:var(--accent-green); font-weight:bold;">0.00</span>
-            </div>
-        `).join('');
-
-        document.getElementById('add-match-modal').classList.add('active');
-    }
-
-    function calcBatSR(idx) {
-        const runs = parseFloat(document.getElementById(`bat-runs-${idx}`).value) || 0;
-        const balls = parseFloat(document.getElementById(`bat-balls-${idx}`).value) || 0;
-        const sr = balls > 0 ? ((runs / balls) * 100).toFixed(1) : '0.0';
-        document.getElementById(`bat-sr-${idx}`).innerText = sr;
-    }
-
-    function calcBowlEcon(idx) {
-        const overs = parseFloat(document.getElementById(`bowl-overs-${idx}`).value) || 0;
-        const runs = parseFloat(document.getElementById(`bowl-runs-${idx}`).value) || 0;
-        const econ = overs > 0 ? (runs / overs).toFixed(2) : '0.00';
-        document.getElementById(`bowl-econ-${idx}`).innerText = econ;
-    }
-
-    function closeMatchModal() { document.getElementById('add-match-modal').classList.remove('active'); }
-
-    function submitFullMatchScorecard() {
-        const opponent = document.getElementById('match-opponent').value.trim();
-        const result = document.getElementById('match-result').value.trim();
-        if (!opponent || !result) { alert("Please enter opponent name and result!"); return; }
-
-        const batScorecard = [];
-        const bowlScorecard = [];
-
-        players.forEach((p, idx) => {
-            const bRuns = parseInt(document.getElementById(`bat-runs-${idx}`).value) || 0;
-            const bBalls = parseInt(document.getElementById(`bat-balls-${idx}`).value) || 0;
-            const bOut = document.getElementById(`bat-out-${idx}`).value;
-
-            if (bBalls > 0 || bRuns > 0 || bOut === 'Out' || bOut === 'Not Out') {
-                batScorecard.push({
-                    name: p.name,
-                    runs: bRuns,
-                    balls: bBalls,
-                    fours: parseInt(document.getElementById(`bat-4s-${idx}`).value) || 0,
-                    sixes: parseInt(document.getElementById(`bat-6s-${idx}`).value) || 0,
-                    outStatus: bOut,
-                    sr: bBalls > 0 ? ((bRuns / bBalls) * 100).toFixed(1) : '0.0'
-                });
-            }
-
-            const bwOvers = parseFloat(document.getElementById(`bowl-overs-${idx}`).value) || 0;
-            const bwRuns = parseInt(document.getElementById(`bowl-runs-${idx}`).value) || 0;
-            const bwWkts = parseInt(document.getElementById(`bowl-wkts-${idx}`).value) || 0;
-
-            if (bwOvers > 0) {
-                bowlScorecard.push({
-                    name: p.name,
-                    overs: bwOvers,
-                    maidens: parseInt(document.getElementById(`bowl-maidens-${idx}`).value) || 0,
-                    runs: bwRuns,
-                    wickets: bwWkts,
-                    econ: bwOvers > 0 ? (bwRuns / bwOvers).toFixed(2) : '0.00'
-                });
-            }
-        });
-
-        const newMatch = {
-            id: Date.now(),
-            opponent: opponent,
-            date: document.getElementById('match-date').value,
-            result: result,
-            battingScorecard: batScorecard,
-            bowlingScorecard: bowlScorecard
-        };
-
-        matches.unshift(newMatch);
-        saveData();
-        renderMatches();
-        renderStats();
-        closeMatchModal();
-    }
-
     function exportDataBackup() {
-        const backupPayload = { players, matches, storedAdminPass };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
+        const backup = { players, matches, exportDate: new Date().toISOString() };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
         const a = document.createElement('a');
         a.href = dataStr;
-        a.download = `Cricket_Complete_Portal_Backup.json`;
+        a.download = `cricket_backup.json`;
         a.click();
     }
 
     function importDataBackup(e) {
         const fr = new FileReader();
         fr.onload = function(evt) {
-            try {
-                const data = JSON.parse(evt.target.result);
-                if (data.players) players = data.players;
-                if (data.matches) matches = data.matches;
-                if (data.storedAdminPass) {
-                    storedAdminPass = data.storedAdminPass;
-                    localStorage.setItem('mz_admin_pass', storedAdminPass);
-                }
+            const data = JSON.parse(evt.target.result);
+            if (data.players && data.matches) {
+                players = data.players;
+                matches = data.matches;
                 saveData();
                 initApp();
-                alert("Backup restored successfully!");
-            } catch (err) {
-                alert("Invalid JSON backup file!");
+                alert("All Data & Matches Restored Successfully!");
             }
         };
         fr.readAsText(e.target.files[0]);
     }
 
-    // Start App
     initApp();
 </script>
 
