@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Team Squad & Match Data Portal</title>
+    <title>Cricket Squad, Playing 11 & Match Data Portal</title>
     <style>
-        /* Modern Dark Theme - 100% Offline Compatible Styles */
         :root {
             --bg-main: #0d1117;
             --bg-card: #161b22;
@@ -14,601 +13,310 @@
             --accent-gold: #e5a93c;
             --accent-green: #2ea043;
             --accent-red: #da3633;
+            --accent-blue: #388bfd;
             --text-primary: #f0f6fc;
             --text-secondary: #8b949e;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-primary); padding-bottom: 60px; min-height: 100vh; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 15px; }
 
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            line-height: 1.5;
-            padding-bottom: 50px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 15px;
-        }
-
-        /* Navigation Header */
         header {
             background-color: var(--bg-card);
             border-bottom: 2px solid var(--border-color);
             padding: 15px 0;
-            margin-bottom: 25px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            margin-bottom: 20px;
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .brand-title {
-            color: var(--accent-gold);
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .developer-badge {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            background: var(--bg-input);
-            padding: 4px 10px;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-        }
-
-        .dev-name {
-            color: var(--accent-gold);
-            font-weight: bold;
-        }
-
-        .admin-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
+        .nav-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .brand-title { color: var(--accent-gold); font-size: 1.5rem; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .developer-badge { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-input); padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border-color); display: inline-block; margin-top: 4px; }
+        .dev-name { color: var(--accent-gold); font-weight: bold; }
 
         .btn {
-            background-color: var(--bg-input);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color);
+            padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
         }
+        .btn:hover { background-color: #30363d; border-color: var(--text-secondary); }
+        .btn-gold { background-color: var(--accent-gold); color: #000; border: none; }
+        .btn-gold:hover { background-color: #f0b446; }
+        .btn-green { background-color: var(--accent-green); color: #fff; border: none; }
+        .btn-green:hover { background-color: #38b251; }
+        .btn-danger { background-color: var(--accent-red); color: #fff; border: none; }
+        .btn-danger:hover { background-color: #e54441; }
+        .btn-blue { background-color: var(--accent-blue); color: #fff; border: none; }
 
-        .btn:hover {
-            background-color: #30363d;
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; overflow-x: auto; }
+        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 6px; white-space: nowrap; transition: all 0.2s; }
+        .tab-btn.active { background-color: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--border-color); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .admin-banner { background: #1c2128; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+        .pitch-container { background: linear-gradient(180deg, #0d381d 0%, #051e0e 100%); border: 3px solid var(--accent-green); border-radius: 12px; padding: 25px; margin-bottom: 30px; box-shadow: inset 0 0 30px rgba(0,0,0,0.6); }
+        .pitch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+
+        .pitch-card {
+            background: rgba(22, 27, 34, 0.92); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 12px; width: 145px; text-align: center; position: relative; backdrop-filter: blur(4px); box-shadow: 0 4px 10px rgba(0,0,0,0.4);
         }
+        .pitch-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold); margin-bottom: 6px; }
+        .pitch-card h4 { font-size: 0.88rem; color: #fff; }
+        .pitch-card p { font-size: 0.75rem; color: var(--accent-gold); }
 
-        .btn-gold {
-            background-color: var(--accent-gold);
-            color: #000;
-            border: none;
-        }
+        .squad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .squad-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; }
+        .squad-header { display: flex; gap: 15px; align-items: center; margin-bottom: 12px; }
+        .squad-card img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
 
-        .btn-gold:hover {
-            background-color: #c99332;
-        }
-
-        .btn-green {
-            background-color: var(--accent-green);
-            color: #fff;
-            border: none;
-        }
-
-        .btn-danger {
-            background-color: var(--accent-red);
-            color: #fff;
-            border: none;
-        }
-
-        /* Navigation Tabs */
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            overflow-x: auto;
-        }
-
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-secondary);
-            padding: 10px 20px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 6px;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background-color: var(--bg-card);
-            color: var(--accent-gold);
-            border: 1px solid var(--border-color);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Admin Notice Banner */
-        .admin-status-banner {
-            background: #1c2128;
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--accent-gold);
-            padding: 12px 20px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Tactical Pitch Visualizer */
-        .pitch-container {
-            background: linear-gradient(180deg, #0e331c 0%, #051a0d 100%);
-            border: 3px solid var(--accent-green);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            position: relative;
-        }
-
-        .pitch-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-
-        .pitch-header h2 {
-            color: #ffffff;
-            font-size: 1.6rem;
-        }
-
-        .pitch-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .pitch-row {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .pitch-player-card {
-            background: rgba(22, 27, 34, 0.95);
-            border: 1px solid var(--accent-gold);
-            border-radius: 10px;
-            padding: 10px;
-            width: 135px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-
-        .pitch-player-card img {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--accent-gold);
-            margin-bottom: 6px;
-        }
-
-        .pitch-player-card h4 {
-            font-size: 0.85rem;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .pitch-player-card p {
-            font-size: 0.75rem;
-            color: var(--accent-gold);
-        }
-
-        .badge-role {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: var(--accent-gold);
-            color: #000;
-            font-weight: bold;
-            font-size: 0.65rem;
-            padding: 2px 5px;
-            border-radius: 4px;
-        }
-
-        /* Squad Cards */
-        .squad-filter {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .squad-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 20px;
-        }
-
-        .squad-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            gap: 15px;
-            position: relative;
-        }
-
-        .squad-card img {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--border-color);
-        }
-
-        .squad-info h3 {
-            font-size: 1.1rem;
-            color: var(--text-primary);
-        }
-
-        .squad-info p {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .status-badge {
-            display: inline-block;
-            font-size: 0.7rem;
-            padding: 2px 8px;
-            border-radius: 12px;
-            margin-top: 6px;
-            font-weight: bold;
-        }
-
+        .status-badge { display: inline-block; font-size: 0.72rem; padding: 3px 10px; border-radius: 12px; font-weight: bold; margin-top: 4px; }
         .status-available { background: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid #2ea043; }
         .status-injured { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
         .status-bench { background: rgba(229, 169, 60, 0.2); color: #e5a93c; border: 1px solid #e5a93c; }
 
-        /* Tables */
-        .data-table-container {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow-x: auto;
-            margin-bottom: 25px;
-        }
+        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background: var(--bg-card); border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color); }
+        th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.88rem; }
+        th { background: var(--bg-input); color: var(--accent-gold); font-weight: 600; }
+        tr:hover { background-color: rgba(255,255,255,0.02); }
 
-        th, td {
-            padding: 12px 15px;
-            border-bottom: 1px solid var(--border-color);
-        }
+        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
+        .modal-backdrop.active { display: flex; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 100%; max-width: 520px; padding: 25px; max-height: 90vh; overflow-y: auto; }
 
-        th {
-            background-color: var(--bg-input);
-            color: var(--accent-gold);
-            font-size: 0.9rem;
-        }
+        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 14px; }
+        .form-group label { font-size: 0.85rem; color: var(--text-secondary); }
+        .form-group input, .form-group select { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 9px 12px; border-radius: 6px; outline: none; font-size: 0.9rem; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
 
-        td {
-            font-size: 0.9rem;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-        /* Form Inputs */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-group label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-        }
-
-        .form-group input, .form-group select {
-            background-color: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        /* Modal Popup */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-backdrop.active {
-            display: flex;
-        }
-
-        .modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-header h3 {
-            color: var(--accent-gold);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 25px 0;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            margin-top: 40px;
-            font-size: 0.9rem;
-        }
-
-        footer span {
-            color: var(--accent-gold);
-            font-weight: bold;
-        }
+        footer { text-align: center; padding: 25px 0; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; font-size: 0.9rem; }
+        footer span { color: var(--accent-gold); font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Header -->
     <header>
         <div class="nav-wrapper">
             <div>
-                <div class="brand-title">🏏 Team Squad & Match Portal</div>
-                <div class="developer-badge">Developed by <span class="dev-name">Muhammad Zahid</span></div>
+                <div class="brand-title">🏏 Cricket Squad & Match Data Portal</div>
+                <div class="developer-badge">Website Developed by <span class="dev-name">Muhammad Zahid</span></div>
             </div>
-            <div class="admin-controls">
+            <div style="display: flex; align-items: center; gap: 10px;">
                 <span id="role-indicator" style="font-size: 0.85rem; color: var(--text-secondary);">Role: Visitor</span>
                 <button class="btn btn-gold" id="login-btn" onclick="toggleAdminLogin()">Admin Login</button>
             </div>
         </div>
     </header>
 
-    <!-- Admin Banner -->
-    <div class="admin-status-banner" id="admin-banner">
+    <div class="admin-banner">
         <div>
-            <strong>Mode: <span id="current-mode-text" style="color: var(--text-secondary);">Visitor View Only</span></strong>
-            <p style="font-size: 0.8rem; color: var(--text-secondary);">Log in as admin to record matches, edit squad, or backup data.</p>
+            <strong>Status: <span id="current-mode-text">Visitor Mode (Read-Only)</span></strong>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px;">Enter admin password to edit squad members, swap Playing 11, and submit new matches.</p>
         </div>
-        <div id="backup-buttons-container" style="display: none; gap: 10px;">
+        <div id="backup-controls" style="display: none; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-green" onclick="exportDataBackup()">📥 Export Backup (JSON)</button>
-            <button class="btn" onclick="triggerImportBackup()">📤 Import Backup</button>
-            <input type="file" id="import-file" style="display: none;" onchange="importDataBackup(event)">
+            <button class="btn btn-blue" onclick="document.getElementById('import-file').click()">📤 Import Backup</button>
+            <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importDataBackup(event)">
         </div>
     </div>
 
-    <!-- Navigation Tabs -->
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchTab('pitch-tab', this)">🟢 Playing 11 Ground</button>
-        <button class="tab-btn" onclick="switchTab('squad-tab', this)">📋 Full Squad (15 Players)</button>
-        <button class="tab-btn" onclick="switchTab('matches-tab', this)">📊 Matches & Records</button>
-        <button class="tab-btn" onclick="switchTab('stats-tab', this)">⭐ Player Career Stats</button>
+        <button class="tab-btn active" onclick="switchTab('pitch-tab', this)">🟢 Playing 11 Ground View</button>
+        <button class="tab-btn" onclick="switchTab('squad-tab', this)">📋 Squad Roster & Editing</button>
+        <button class="tab-btn" onclick="switchTab('stats-tab', this)">📊 Career Player Stats</button>
+        <button class="tab-btn" onclick="switchTab('matches-tab', this)">🏏 Match Scorecards & Entry</button>
     </div>
 
-    <!-- TAB 1: Playing 11 Pitch Visualizer -->
     <div id="pitch-tab" class="tab-content active">
         <div class="pitch-container">
-            <div class="pitch-header">
-                <h2>🟢 Official Playing XI Tactical Field</h2>
-                <p style="color: var(--text-secondary); font-size: 0.85rem;">Selected 11 Players for Current Match Tactical Formation</p>
-            </div>
-            <div class="pitch-grid" id="pitch-display">
-                <!-- Tactical Rows dynamically rendered here -->
-            </div>
+            <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">🟢 Playing 11 On Field (<span id="p11-count">11</span> Selected)</h2>
+            <div class="pitch-grid" id="pitch-display"></div>
         </div>
     </div>
 
-    <!-- TAB 2: Squad Management -->
     <div id="squad-tab" class="tab-content">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>Squad Members</h2>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h2>Complete Squad Roster</h2>
             <button class="btn btn-gold admin-only" style="display: none;" onclick="openAddPlayerModal()">+ Add New Player</button>
         </div>
-
-        <div class="squad-filter">
-            <button class="btn" onclick="filterSquad('All')">All</button>
-            <button class="btn" onclick="filterSquad('Top-Order Batter')">Batters</button>
-            <button class="btn" onclick="filterSquad('All-Rounder')">All-Rounders</button>
-            <button class="btn" onclick="filterSquad('Fast Bowler')">Fast Bowlers</button>
-            <button class="btn" onclick="filterSquad('Spin Bowler')">Spin Bowlers</button>
-        </div>
-
-        <div class="squad-grid" id="squad-cards-container">
-            <!-- Dynamic Squad Cards -->
-        </div>
+        <div class="squad-grid" id="squad-cards-container"></div>
     </div>
 
-    <!-- TAB 3: Match Entry & History -->
-    <div id="matches-tab" class="tab-content">
-        <div class="admin-only" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-            <h3 style="color: var(--accent-gold); margin-bottom: 15px;">📝 Record New Match Performance</h3>
-            <form id="match-form" onsubmit="handleRecordMatch(event)">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Date</label>
-                        <input type="date" id="match-date" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Opponent Team</label>
-                        <input type="text" id="match-opponent" placeholder="e.g., Lahore Lions" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Venue</label>
-                        <input type="text" id="match-venue" placeholder="e.g., National Stadium" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Result</label>
-                        <select id="match-result">
-                            <option value="Won">Won</option>
-                            <option value="Lost">Lost</option>
-                            <option value="Tied">Tied</option>
-                        </select>
-                    </div>
-                </div>
-
-                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🏏 Batting Performers</h4>
-                <div id="batting-entry-rows"></div>
-
-                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🎯 Bowling Performers</h4>
-                <div id="bowling-entry-rows"></div>
-
-                <button type="submit" class="btn btn-green" style="margin-top: 20px; width: 100%;">Save Match Scorecard & Update Stats</button>
-            </form>
-        </div>
-
-        <h2>Match History & Scorecards</h2>
-        <div id="match-history-list" style="margin-top: 15px;"></div>
-    </div>
-
-    <!-- TAB 4: Player Career Stats -->
     <div id="stats-tab" class="tab-content">
-        <h2 style="margin-bottom: 20px;">Cumulative Player Career Performance</h2>
-        <div class="data-table-container">
+        <h2 style="margin-bottom: 15px;">Player Career Statistics</h2>
+        <div style="overflow-x: auto;">
             <table>
                 <thead>
                     <tr>
-                        <th>Player</th>
+                        <th>Player Name</th>
                         <th>Category</th>
                         <th>Matches</th>
                         <th>Runs</th>
-                        <th>Highest</th>
-                        <th>Bat Avg</th>
-                        <th>Bat SR</th>
+                        <th>High Score</th>
                         <th>Wickets</th>
-                        <th>Econ</th>
+                        <th>Best Bowling</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
-                <tbody id="career-stats-tbody">
-                    <!-- Dynamic Career Stats -->
-                </tbody>
+                <tbody id="career-stats-body"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Footer -->
+    <div id="matches-tab" class="tab-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+            <h2>Match Records & History</h2>
+            <button class="btn btn-gold admin-only" style="display: none;" onclick="openAddMatchModal()">+ Record New Match Scorecard</button>
+        </div>
+        <div id="match-records-container"></div>
+    </div>
+
     <footer>
-        <p>Cricket Squad & Match Data Portal &copy; 2026 | Website Developed by <span>Muhammad Zahid</span></p>
+        <p>Cricket Squad, Playing 11 & Match Data Portal &copy; 2026 | Website Developed by <span>Muhammad Zahid</span></p>
     </footer>
 </div>
 
-<!-- Admin Password Modal -->
 <div class="modal-backdrop" id="admin-modal">
     <div class="modal-box">
-        <div class="modal-header">
-            <h3>Admin Login</h3>
-            <button class="btn" onclick="closeAdminModal()">X</button>
+        <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Admin Login Access</h3>
+        <div class="form-group">
+            <input type="password" id="admin-pass-input" placeholder="Enter Password">
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 15px;">Enter Admin Password to manage team squad and match data.</p>
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label>Password</label>
-            <input type="password" id="admin-pass-input" placeholder="Enter password">
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-gold" style="flex:1;" onclick="submitAdminLogin()">Login</button>
+            <button class="btn" style="flex:1;" onclick="closeAdminModal()">Cancel</button>
         </div>
-        <button class="btn btn-gold" style="width: 100%;" onclick="submitAdminLogin()">Login</button>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="edit-player-modal">
+    <div class="modal-box">
+        <h3 style="color: var(--accent-gold); margin-bottom: 15px;" id="modal-player-title">Edit Player Profile</h3>
+        <input type="hidden" id="edit-player-id">
+        <div class="form-group">
+            <label>Player Full Name</label>
+            <input type="text" id="edit-player-name" placeholder="e.g. Babar Azam">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Category</label>
+                <select id="edit-player-category">
+                    <option value="Top-Order Batter">Top-Order Batter</option>
+                    <option value="Middle-Order Batter">Middle-Order Batter</option>
+                    <option value="Wicket-Keeper">Wicket-Keeper</option>
+                    <option value="All-Rounder">All-Rounder</option>
+                    <option value="Fast Bowler">Fast Bowler</option>
+                    <option value="Spin Bowler">Spin Bowler</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Leadership Role</label>
+                <select id="edit-player-role">
+                    <option value="">None</option>
+                    <option value="C">Captain (C)</option>
+                    <option value="VC">Vice-Captain (VC)</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Image URL</label>
+            <input type="text" id="edit-player-img" placeholder="https://images.unsplash.com/...">
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-green" style="flex:1;" onclick="savePlayerEdit()">Save Player Data</button>
+            <button class="btn" style="flex:1;" onclick="closeEditModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="add-match-modal">
+    <div class="modal-box" style="max-width: 650px;">
+        <h3 style="color: var(--accent-gold); margin-bottom: 15px;">Submit Match Performance Data</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Opponent Team</label>
+                <input type="text" id="match-opponent" placeholder="e.g. India, Australia">
+            </div>
+            <div class="form-group">
+                <label>Match Date</label>
+                <input type="date" id="match-date">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Match Result</label>
+            <input type="text" id="match-result" placeholder="e.g. Won by 25 runs, Lost by 3 wickets">
+        </div>
+
+        <h4 style="color: var(--accent-gold); margin: 15px 0 10px 0;">Top Performer Stats</h4>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Top Batter</label>
+                <select id="match-top-batter"></select>
+            </div>
+            <div class="form-group">
+                <label>Runs Scored</label>
+                <input type="number" id="match-top-runs" value="0">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Top Bowler</label>
+                <select id="match-top-bowler"></select>
+            </div>
+            <div class="form-group">
+                <label>Wickets Taken</label>
+                <input type="number" id="match-top-wickets" value="0">
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-green" style="flex:1;" onclick="submitMatchRecord()">Save Scorecard</button>
+            <button class="btn" style="flex:1;" onclick="closeMatchModal()">Cancel</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // Initial 15 Pre-loaded Squad Data
     const defaultPlayers = [
-        { id: 1, name: "Babar Azam", category: "Top-Order Batter", isPlaying11: true, roleBadge: "C", status: "Available", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop" },
-        { id: 2, name: "Mohammad Rizwan", category: "Wicket-Keeper", isPlaying11: true, roleBadge: "VC", status: "Available", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop" },
-        { id: 3, name: "Fakhar Zaman", category: "Top-Order Batter", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop" },
-        { id: 4, name: "Saim Ayub", category: "Top-Order Batter", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop" },
-        { id: 5, name: "Shadab Khan", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&auto=format&fit=crop" },
-        { id: 6, name: "Iftikhar Ahmed", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&auto=format&fit=crop" },
-        { id: 7, name: "Imad Wasim", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop" },
-        { id: 8, name: "Shaheen Afridi", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&auto=format&fit=crop" },
-        { id: 9, name: "Naseem Shah", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&auto=format&fit=crop" },
-        { id: 10, name: "Haris Rauf", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=120&auto=format&fit=crop" },
-        { id: 11, name: "Abrar Ahmed", category: "Spin Bowler", isPlaying11: true, roleBadge: "", status: "Available", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop" },
-        { id: 12, name: "Mohammad Haris", category: "Wicket-Keeper", isPlaying11: false, roleBadge: "", status: "Bench", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop" },
-        { id: 13, name: "Usama Mir", category: "Spin Bowler", isPlaying11: false, roleBadge: "", status: "Bench", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop" },
-        { id: 14, name: "Zaman Khan", category: "Fast Bowler", isPlaying11: false, roleBadge: "", status: "Bench", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop" },
-        { id: 15, name: "Wasim Jr", category: "Fast Bowler", isPlaying11: false, roleBadge: "", status: "Injured", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop" }
+        { id: 1, name: "Babar Azam", category: "Top-Order Batter", isPlaying11: true, roleBadge: "C", status: "Available", runs: 3890, matches: 112, wickets: 0, highScore: 122, bestBowling: "0/0", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop" },
+        { id: 2, name: "Mohammad Rizwan", category: "Wicket-Keeper", isPlaying11: true, roleBadge: "VC", status: "Available", runs: 3210, matches: 98, wickets: 0, highScore: 104, bestBowling: "0/0", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop" },
+        { id: 3, name: "Fakhar Zaman", category: "Top-Order Batter", isPlaying11: true, roleBadge: "", status: "Available", runs: 2850, matches: 82, wickets: 1, highScore: 193, bestBowling: "1/19", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop" },
+        { id: 4, name: "Saim Ayub", category: "Top-Order Batter", isPlaying11: true, roleBadge: "", status: "Available", runs: 640, matches: 24, wickets: 4, highScore: 79, bestBowling: "2/15", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop" },
+        { id: 5, name: "Shadab Khan", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", runs: 1540, matches: 92, wickets: 104, highScore: 86, bestBowling: "4/28", img: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&auto=format&fit=crop" },
+        { id: 6, name: "Iftikhar Ahmed", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", runs: 980, matches: 58, wickets: 18, highScore: 60, bestBowling: "3/11", img: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&auto=format&fit=crop" },
+        { id: 7, name: "Imad Wasim", category: "All-Rounder", isPlaying11: true, roleBadge: "", status: "Available", runs: 1080, matches: 72, wickets: 70, highScore: 56, bestBowling: "5/14", img: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=120&auto=format&fit=crop" },
+        { id: 8, name: "Shaheen Afridi", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", runs: 310, matches: 68, wickets: 96, highScore: 23, bestBowling: "4/22", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=120&auto=format&fit=crop" },
+        { id: 9, name: "Naseem Shah", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", runs: 140, matches: 34, wickets: 48, highScore: 18, bestBowling: "5/35", img: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=120&auto=format&fit=crop" },
+        { id: 10, name: "Haris Rauf", category: "Fast Bowler", isPlaying11: true, roleBadge: "", status: "Available", runs: 90, matches: 66, wickets: 90, highScore: 13, bestBowling: "4/18", img: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=120&auto=format&fit=crop" },
+        { id: 11, name: "Abrar Ahmed", category: "Spin Bowler", isPlaying11: true, roleBadge: "", status: "Available", runs: 30, matches: 14, wickets: 22, highScore: 8, bestBowling: "4/30", img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop" },
+        { id: 12, name: "Mohammad Haris", category: "Wicket-Keeper", isPlaying11: false, roleBadge: "", status: "Bench", runs: 420, matches: 18, wickets: 0, highScore: 41, bestBowling: "0/0", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop" },
+        { id: 13, name: "Usama Mir", category: "Spin Bowler", isPlaying11: false, roleBadge: "", status: "Bench", runs: 110, matches: 12, wickets: 15, highScore: 20, bestBowling: "3/24", img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop" },
+        { id: 14, name: "Zaman Khan", category: "Fast Bowler", isPlaying11: false, roleBadge: "", status: "Bench", runs: 15, matches: 10, wickets: 12, highScore: 8, bestBowling: "3/16", img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop" },
+        { id: 15, name: "Wasim Jr", category: "Fast Bowler", isPlaying11: false, roleBadge: "", status: "Injured", runs: 180, matches: 27, wickets: 35, highScore: 24, bestBowling: "4/24", img: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=120&auto=format&fit=crop" }
     ];
 
-    // Local Storage State Management
-    let players = JSON.parse(localStorage.getItem('mz_cricket_players')) || defaultPlayers;
-    let matches = JSON.parse(localStorage.getItem('mz_cricket_matches')) || [];
-    let isAdmin = false;
-    let adminPassword = localStorage.getItem('mz_admin_pass') || 'zahid123';
+    const defaultMatches = [
+        { id: 101, opponent: "Australia", date: "2026-02-14", result: "Won by 18 Runs", topBatter: "Babar Azam", runs: 78, topBowler: "Shaheen Afridi", wickets: 3 },
+        { id: 102, opponent: "England", date: "2026-01-20", result: "Won by 4 Wickets", topBatter: "Mohammad Rizwan", runs: 64, topBowler: "Haris Rauf", wickets: 4 }
+    ];
 
-    // Application Initialization
+    let players = JSON.parse(localStorage.getItem('mz_cricket_players')) || defaultPlayers;
+    let matches = JSON.parse(localStorage.getItem('mz_cricket_matches')) || defaultMatches;
+    let isAdmin = false;
+
     function initApp() {
         renderPitch();
-        renderSquad(players);
-        renderMatchEntryFields();
-        renderMatchHistory();
-        renderCareerStats();
+        renderSquad();
+        renderStats();
+        renderMatches();
     }
 
     function saveData() {
@@ -616,7 +324,6 @@
         localStorage.setItem('mz_cricket_matches', JSON.stringify(matches));
     }
 
-    // Navigation Tabs
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
         document.querySelectorAll('.tab-btn').forEach(tb => tb.classList.remove('active'));
@@ -624,203 +331,277 @@
         btn.classList.add('active');
     }
 
-    // Admin Security Logic
     function toggleAdminLogin() {
         if (isAdmin) {
             isAdmin = false;
             document.getElementById('role-indicator').innerText = "Role: Visitor";
             document.getElementById('login-btn').innerText = "Admin Login";
-            document.getElementById('current-mode-text').innerText = "Visitor View Only";
-            document.getElementById('backup-buttons-container').style.display = 'none';
+            document.getElementById('current-mode-text').innerText = "Visitor Mode (Read-Only)";
+            document.getElementById('backup-controls').style.display = 'none';
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            renderSquad();
+            renderMatches();
         } else {
             document.getElementById('admin-modal').classList.add('active');
         }
     }
 
-    function closeAdminModal() {
-        document.getElementById('admin-modal').classList.remove('active');
-    }
+    function closeAdminModal() { document.getElementById('admin-modal').classList.remove('active'); }
 
     function submitAdminLogin() {
-        const inputPass = document.getElementById('admin-pass-input').value;
-        if (inputPass === adminPassword) {
+        if (document.getElementById('admin-pass-input').value === 'zahid1234') {
             isAdmin = true;
             document.getElementById('role-indicator').innerText = "Role: Admin";
             document.getElementById('login-btn').innerText = "Logout Admin";
             document.getElementById('current-mode-text').innerText = "Admin Editing Enabled";
-            document.getElementById('backup-buttons-container').style.display = 'flex';
-            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            document.getElementById('backup-controls').style.display = 'flex';
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'inline-block');
             closeAdminModal();
-            document.getElementById('admin-pass-input').value = "";
+            renderSquad();
+            renderMatches();
         } else {
             alert("Incorrect Admin Password!");
         }
     }
 
-    // Render Playing 11 Tactical Ground
     function renderPitch() {
         const pitchContainer = document.getElementById('pitch-display');
-        const playing11 = players.filter(p => p.isPlaying11);
+        const p11 = players.filter(p => p.isPlaying11);
+        document.getElementById('p11-count').innerText = p11.length;
 
-        pitchContainer.innerHTML = `
-            <div class="pitch-row">
-                ${playing11.map(p => `
-                    <div class="pitch-player-card">
-                        ${p.roleBadge ? `<span class="badge-role">${p.roleBadge}</span>` : ''}
-                        <img src="${p.img}" alt="${p.name}">
-                        <h4>${p.name}</h4>
-                        <p>${p.category}</p>
-                    </div>
-                `).join('')}
+        pitchContainer.innerHTML = p11.map(p => `
+            <div class="pitch-card">
+                <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/161b22/e5a93c?text=${encodeURIComponent(p.name)}'">
+                <h4>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h4>
+                <p>${p.category}</p>
             </div>
-        `;
+        `).join('');
     }
 
-    // Render Squad Cards
-    function renderSquad(squadList) {
+    function renderSquad() {
         const squadContainer = document.getElementById('squad-cards-container');
-        squadContainer.innerHTML = squadList.map(p => `
+        squadContainer.innerHTML = players.map(p => `
             <div class="squad-card">
-                <img src="${p.img}" alt="${p.name}">
-                <div class="squad-info">
-                    <h3>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
-                    <p>${p.category}</p>
-                    <span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span>
+                <div>
+                    <div class="squad-header">
+                        <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/161b22/e5a93c?text=${encodeURIComponent(p.name)}'">
+                        <div>
+                            <h3>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-secondary);">${p.category}</p>
+                            <span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span>
+                        </div>
+                    </div>
                 </div>
+                ${isAdmin ? `
+                    <div class="action-buttons admin-only">
+                        <button class="btn ${p.isPlaying11 ? 'btn-danger' : 'btn-green'}" style="flex:1;" onclick="togglePlaying11(${p.id})">
+                            ${p.isPlaying11 ? 'Remove 11' : 'Add to 11'}
+                        </button>
+                        <button class="btn btn-gold" onclick="openEditModal(${p.id})">Edit</button>
+                        <button class="btn" onclick="toggleStatus(${p.id})">Status</button>
+                    </div>
+                ` : ''}
             </div>
         `).join('');
     }
 
-    function filterSquad(cat) {
-        if (cat === 'All') {
-            renderSquad(players);
-        } else {
-            renderSquad(players.filter(p => p.category === cat));
-        }
-    }
-
-    // Match Entry & Scorecards
-    function renderMatchEntryFields() {
-        const battingDiv = document.getElementById('batting-entry-rows');
-        const bowlingDiv = document.getElementById('bowling-entry-rows');
-
-        const active11 = players.filter(p => p.isPlaying11);
-
-        battingDiv.innerHTML = active11.slice(0, 6).map((p, i) => `
-            <div class="form-grid" style="margin-bottom: 8px;">
-                <input type="text" value="${p.name}" readonly style="background: var(--bg-main);">
-                <input type="number" id="bat-runs-${i}" placeholder="Runs" min="0">
-                <input type="number" id="bat-balls-${i}" placeholder="Balls" min="0">
-            </div>
-        `).join('');
-
-        bowlingDiv.innerHTML = active11.slice(6, 11).map((p, i) => `
-            <div class="form-grid" style="margin-bottom: 8px;">
-                <input type="text" value="${p.name}" readonly style="background: var(--bg-main);">
-                <input type="number" id="bowl-overs-${i}" placeholder="Overs" step="0.1" min="0">
-                <input type="number" id="bowl-runs-${i}" placeholder="Runs Given" min="0">
-                <input type="number" id="bowl-wkts-${i}" placeholder="Wickets" min="0">
-            </div>
-        `).join('');
-    }
-
-    function handleRecordMatch(e) {
-        e.preventDefault();
-        const date = document.getElementById('match-date').value;
-        const opponent = document.getElementById('match-opponent').value;
-        const venue = document.getElementById('match-venue').value;
-        const result = document.getElementById('match-result').value;
-
-        const newMatch = {
-            id: Date.now(),
-            date,
-            opponent,
-            venue,
-            result
-        };
-
-        matches.push(newMatch);
-        saveData();
-        renderMatchHistory();
-        renderCareerStats();
-        alert("Match recorded successfully!");
-    }
-
-    function renderMatchHistory() {
-        const historyContainer = document.getElementById('match-history-list');
-        if (matches.length === 0) {
-            historyContainer.innerHTML = `<p style="color: var(--text-secondary);">No match records saved yet.</p>`;
+    function togglePlaying11(id) {
+        const p = players.find(x => x.id === id);
+        if (!p.isPlaying11 && players.filter(x => x.isPlaying11).length >= 11) {
+            alert("Limit reached! Exactly 11 players can be in the Playing 11. Remove someone first.");
             return;
         }
-
-        historyContainer.innerHTML = matches.map(m => `
-            <div style="background: var(--bg-card); border: 1px solid var(--border-color); padding: 15px; border-radius: 8px; margin-bottom: 10px;">
-                <div style="display: flex; justify-content: space-between;">
-                    <h3 style="color: var(--accent-gold);">vs ${m.opponent}</h3>
-                    <span style="font-weight: bold; color: ${m.result === 'Won' ? 'var(--accent-green)' : 'var(--accent-red)'};">${m.result}</span>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--text-secondary);">${m.date} | ${m.venue}</p>
-            </div>
-        `).join('');
+        p.isPlaying11 = !p.isPlaying11;
+        saveData();
+        renderPitch();
+        renderSquad();
     }
 
-    function renderCareerStats() {
-        const tbody = document.getElementById('career-stats-tbody');
-        tbody.innerHTML = players.map(p => `
+    function toggleStatus(id) {
+        const p = players.find(x => x.id === id);
+        if (p.status === 'Available') p.status = 'Bench';
+        else if (p.status === 'Bench') p.status = 'Injured';
+        else p.status = 'Available';
+        saveData();
+        renderSquad();
+        renderStats();
+    }
+
+    function openAddPlayerModal() {
+        document.getElementById('modal-player-title').innerText = "Add New Player";
+        document.getElementById('edit-player-id').value = "";
+        document.getElementById('edit-player-name').value = "";
+        document.getElementById('edit-player-category').value = "Top-Order Batter";
+        document.getElementById('edit-player-role').value = "";
+        document.getElementById('edit-player-img').value = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop";
+        document.getElementById('edit-player-modal').classList.add('active');
+    }
+
+    function openEditModal(id) {
+        const p = players.find(x => x.id === id);
+        document.getElementById('modal-player-title').innerText = "Edit Player Profile";
+        document.getElementById('edit-player-id').value = p.id;
+        document.getElementById('edit-player-name').value = p.name;
+        document.getElementById('edit-player-category').value = p.category;
+        document.getElementById('edit-player-role').value = p.roleBadge || "";
+        document.getElementById('edit-player-img').value = p.img;
+        document.getElementById('edit-player-modal').classList.add('active');
+    }
+
+    function closeEditModal() { document.getElementById('edit-player-modal').classList.remove('active'); }
+
+    function savePlayerEdit() {
+        const idVal = document.getElementById('edit-player-id').value;
+        const name = document.getElementById('edit-player-name').value.trim();
+        if (!name) { alert("Please enter player name!"); return; }
+
+        if (idVal) {
+            const p = players.find(x => x.id === parseInt(idVal));
+            p.name = name;
+            p.category = document.getElementById('edit-player-category').value;
+            p.roleBadge = document.getElementById('edit-player-role').value;
+            p.img = document.getElementById('edit-player-img').value;
+        } else {
+            const newPlayer = {
+                id: Date.now(),
+                name: name,
+                category: document.getElementById('edit-player-category').value,
+                isPlaying11: false,
+                roleBadge: document.getElementById('edit-player-role').value,
+                status: "Available",
+                runs: 0, matches: 0, wickets: 0, highScore: 0, bestBowling: "0/0",
+                img: document.getElementById('edit-player-img').value || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop"
+            };
+            players.push(newPlayer);
+        }
+        saveData();
+        renderPitch();
+        renderSquad();
+        renderStats();
+        closeEditModal();
+    }
+
+    function renderStats() {
+        const statsBody = document.getElementById('career-stats-body');
+        statsBody.innerHTML = players.map(p => `
             <tr>
-                <td><strong>${p.name}</strong></td>
+                <td style="font-weight:600; color:#fff;">${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</td>
                 <td>${p.category}</td>
-                <td>${matches.length}</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
-                <td>-</td>
+                <td>${p.matches || 0}</td>
+                <td style="color:var(--accent-gold); font-weight:bold;">${p.runs || 0}</td>
+                <td>${p.highScore || 0}</td>
+                <td style="color:var(--accent-green); font-weight:bold;">${p.wickets || 0}</td>
+                <td>${p.bestBowling || '0/0'}</td>
+                <td><span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span></td>
             </tr>
         `).join('');
     }
 
-    // Backup & Restore System
-    function exportDataBackup() {
-        const backupData = {
-            players,
-            matches,
-            exportDate: new Date().toISOString()
+    function renderMatches() {
+        const matchContainer = document.getElementById('match-records-container');
+        if (matches.length === 0) {
+            matchContainer.innerHTML = `<p style="color:var(--text-secondary);">No match scorecards recorded yet.</p>`;
+            return;
+        }
+
+        matchContainer.innerHTML = matches.map(m => `
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:10px; padding:18px; margin-bottom:15px;">
+                <div style="display:flex; justify-between:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+                    <div>
+                        <h3 style="color:var(--accent-gold);">Pakistan vs ${m.opponent}</h3>
+                        <p style="font-size:0.82rem; color:var(--text-secondary);">${m.date}</p>
+                    </div>
+                    <span style="background:var(--bg-input); padding:4px 12px; border-radius:12px; font-weight:bold; font-size:0.85rem; border:1px solid var(--border-color);">${m.result}</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; padding-top:10px; border-top:1px solid var(--border-color); font-size:0.88rem;">
+                    <div>🏏 <strong>Top Batter:</strong> ${m.topBatter} (${m.runs} Runs)</div>
+                    <div>🎯 <strong>Top Bowler:</strong> ${m.topBowler} (${m.wickets} Wickets)</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function openAddMatchModal() {
+        const batterSelect = document.getElementById('match-top-batter');
+        const bowlerSelect = document.getElementById('match-top-bowler');
+        const playerOptions = players.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+
+        batterSelect.innerHTML = playerOptions;
+        bowlerSelect.innerHTML = playerOptions;
+
+        document.getElementById('match-opponent').value = "";
+        document.getElementById('match-date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('match-result').value = "";
+        document.getElementById('match-top-runs').value = "50";
+        document.getElementById('match-top-wickets').value = "2";
+
+        document.getElementById('add-match-modal').classList.add('active');
+    }
+
+    function closeMatchModal() { document.getElementById('add-match-modal').classList.remove('active'); }
+
+    function submitMatchRecord() {
+        const opponent = document.getElementById('match-opponent').value.trim();
+        const result = document.getElementById('match-result').value.trim();
+        if (!opponent || !result) { alert("Please fill opponent name and match result!"); return; }
+
+        const newMatch = {
+            id: Date.now(),
+            opponent: opponent,
+            date: document.getElementById('match-date').value,
+            result: result,
+            topBatter: document.getElementById('match-top-batter').value,
+            runs: parseInt(document.getElementById('match-top-runs').value) || 0,
+            topBowler: document.getElementById('match-top-bowler').value,
+            wickets: parseInt(document.getElementById('match-top-wickets').value) || 0
         };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `cricket_team_backup_${new Date().toISOString().slice(0,10)}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
+
+        matches.unshift(newMatch);
+
+        // Update Career Stats automatically
+        const batter = players.find(p => p.name === newMatch.topBatter);
+        if (batter) {
+            batter.runs += newMatch.runs;
+            batter.matches += 1;
+            if (newMatch.runs > batter.highScore) batter.highScore = newMatch.runs;
+        }
+
+        const bowler = players.find(p => p.name === newMatch.topBowler);
+        if (bowler && bowler !== batter) {
+            bowler.wickets += newMatch.wickets;
+            bowler.matches += 1;
+        }
+
+        saveData();
+        renderMatches();
+        renderStats();
+        closeMatchModal();
     }
 
-    function triggerImportBackup() {
-        document.getElementById('import-file').click();
+    function exportDataBackup() {
+        const backupPayload = { players, matches };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupPayload, null, 2));
+        const a = document.createElement('a');
+        a.href = dataStr;
+        a.download = `Cricket_Portal_Backup.json`;
+        a.click();
     }
 
-    function importDataBackup(event) {
-        const fileReader = new FileReader();
-        fileReader.onload = function(e) {
+    function importDataBackup(e) {
+        const fr = new FileReader();
+        fr.onload = function(evt) {
             try {
-                const importedData = JSON.parse(e.target.result);
-                if (importedData.players && importedData.matches) {
-                    players = importedData.players;
-                    matches = importedData.matches;
-                    saveData();
-                    initApp();
-                    alert("Backup restored successfully!");
-                } else {
-                    alert("Invalid backup file format!");
-                }
+                const data = JSON.parse(evt.target.result);
+                if (data.players) players = data.players;
+                if (data.matches) matches = data.matches;
+                saveData();
+                initApp();
+                alert("Data backup imported successfully!");
             } catch (err) {
-                alert("Error reading JSON file!");
+                alert("Invalid JSON file format!");
             }
         };
-        fileReader.readAsText(event.target.files[0]);
+        fr.readAsText(e.target.files[0]);
     }
 
     // Start App
