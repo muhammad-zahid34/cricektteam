@@ -377,7 +377,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Setup configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'cricket-portal-default';
@@ -446,34 +446,55 @@
             }
         });
 
-        // Setup Real-time Firestore Listeners (RULE 1 & RULE 2)
-        function setupFirestoreListeners() {
+        // Setup Real-time Firestore Listeners
+        // Player data is stored one player per Firestore document.
+        // This is important because photos are base64 data and putting all
+        // 15 photos inside one document can hit Firestore's 1 MB document limit.
+        async function setupFirestoreListeners() {
             if (!currentUser) return;
 
-            // Public Collection Document for Squad Data
-            const squadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
-            
-            onSnapshot(squadDocRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.data();
-                    if (data && data.players) {
-                        squadData = data.players;
-                        renderAll();
+            const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'players');
+            const legacySquadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
+
+            // First migrate old squad_data (if it exists) into individual player docs.
+            try {
+                const playerDocs = await getDocs(playersCollectionRef);
+                if (playerDocs.empty) {
+                    const legacySnap = await getDoc(legacySquadDocRef);
+                    if (legacySnap.exists() && legacySnap.data().players) {
+                        const oldPlayers = legacySnap.data().players;
+                        await Promise.all(oldPlayers.map(p =>
+                            setDoc(doc(playersCollectionRef, p.id), p, { merge: true })
+                        ));
+                    } else {
+                        await Promise.all(defaultSquad.map(p =>
+                            setDoc(doc(playersCollectionRef, p.id), p, { merge: true })
+                        ));
                     }
-                } else {
-                    // Seed initial data if document doesn't exist
-                    saveSquadToCloud(defaultSquad);
+                }
+            } catch (err) {
+                console.error('Player migration/initialization error:', err);
+                if (squadData.length === 0) {
+                    squadData = defaultSquad;
+                    renderAll();
+                }
+            }
+
+            onSnapshot(playersCollectionRef, (snapshot) => {
+                const players = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (players.length > 0) {
+                    squadData = players;
+                    renderAll();
                 }
             }, (error) => {
-                console.error("Firestore Squad Snapshot Error:", error);
-                // Local fallback on permission error
+                console.error('Firestore Players Snapshot Error:', error);
                 if (squadData.length === 0) {
                     squadData = defaultSquad;
                     renderAll();
                 }
             });
 
-            // Public Collection Document for Matches Data
+            // Match data remains in its existing document.
             const matchDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'match_data');
             onSnapshot(matchDocRef, (snapshot) => {
                 if (snapshot.exists()) {
@@ -485,20 +506,33 @@
                     }
                 }
             }, (error) => {
-                console.error("Firestore Match Snapshot Error:", error);
+                console.error('Firestore Match Snapshot Error:', error);
             });
         }
 
-        // Save Squad Array to Cloud Firestore
+        // Save each player separately so every photo persists safely.
         async function saveSquadToCloud(newSquad) {
+            const oldSquad = Array.isArray(squadData) ? squadData : [];
             squadData = newSquad;
             renderAll();
             if (!currentUser) return;
+
             try {
-                const squadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
-                await setDoc(squadDocRef, { players: squadData }, { merge: true });
+                const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'players');
+                const newIds = new Set(newSquad.map(p => p.id));
+
+                await Promise.all(newSquad.map(p =>
+                    setDoc(doc(playersCollectionRef, p.id), p, { merge: true })
+                ));
+
+                // Remove players deleted from the squad.
+                const removed = oldSquad.filter(p => !newIds.has(p.id));
+                await Promise.all(removed.map(p =>
+                    deleteDoc(doc(playersCollectionRef, p.id))
+                ));
             } catch (err) {
-                console.error("Error saving squad to Firestore:", err);
+                console.error('Error saving players to Firestore:', err);
+                alert('Player save failed. Please check Firebase/Firestore settings and try again.');
             }
         }
 
@@ -781,7 +815,9 @@
                 document.getElementById('pLeadership').value = p.leadership;
                 document.getElementById('pStatus').value = p.status;
                 document.getElementById('pPlaying11').checked = p.playing11;
-                document.getElementById('pPhotoPreview').src = p.photo || 'https://placehold.co/150x150/1e293b/e2e8f0?text=Player';
+                pendingPhotoData = p.photo || 'https://placehold.co/150x150/1e293b/e2e8f0?text=Player';
+                photoReadyPromise = Promise.resolve(pendingPhotoData);
+                document.getElementById('pPhotoPreview').src = pendingPhotoData;
             } else {
                 title.innerText = "Add New Player";
                 document.getElementById('playerForm').reset();
