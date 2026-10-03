@@ -314,7 +314,7 @@
                     <div class="flex-grow">
                         <label class="block text-xs font-semibold text-slate-400 mb-1">Upload Player Photo</label>
                         <input type="file" id="pPhotoInput" accept="image/*" onchange="previewPlayerPhoto(event)" class="text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-gold hover:file:bg-slate-700 cursor-pointer">
-                        <p class="text-[10px] text-slate-500 mt-1">Photo will be compressed and synchronized across all phones instantly.</p>
+                        <p class="text-[10px] text-slate-500 mt-1">Select a photo here, then click Save Player. The photo and all player details sync to every device.</p>
                     </div>
                 </div>
 
@@ -381,10 +381,13 @@
 
         // Firebase Setup configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'cricket-portal-default';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' 
-            ? JSON.parse(__firebase_config) 
+        // YOUR REAL FIREBASE WEB APP CONFIG GOES HERE.
+        // Replace the six placeholder values below with the config
+        // Firebase gives you when you register your Web App.
+        const firebaseConfig = typeof __firebase_config !== 'undefined'
+            ? JSON.parse(__firebase_config)
             : {
-                 apiKey: "AIzaSyD8ObOI0_NBTsyUa_u2hq3GgiaVUBVlIoE",
+               apiKey: "AIzaSyD8ObOI0_NBTsyUa_u2hq3GgiaVUBVlIoE",
   authDomain: "crocker323-4856c.firebaseapp.com",
   projectId: "crocker323-4856c",
   storageBucket: "crocker323-4856c.firebasestorage.app",
@@ -778,7 +781,7 @@
                 document.getElementById('pLeadership').value = p.leadership;
                 document.getElementById('pStatus').value = p.status;
                 document.getElementById('pPlaying11').checked = p.playing11;
-                document.getElementById('pPhotoPreview').src = p.photo;
+                document.getElementById('pPhotoPreview').src = p.photo || 'https://placehold.co/150x150/1e293b/e2e8f0?text=Player';
             } else {
                 title.innerText = "Add New Player";
                 document.getElementById('playerForm').reset();
@@ -791,15 +794,43 @@
             document.getElementById('playerModal').classList.add('hidden');
         };
 
+        // Compress player photos before saving them in Firestore.
+        // This keeps the squad document small enough for Firestore and
+        // lets every edited player's photo sync to all devices.
         window.previewPlayerPhoto = function(e) {
             const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('pPhotoPreview').src = evt.target.result;
+            if (!file) return;
+
+            const img = new Image();
+            const reader = new FileReader();
+
+            reader.onload = function(evt) {
+                img.onload = function() {
+                    const maxSize = 700;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height && width > maxSize) {
+                        height = Math.round(height * maxSize / width);
+                        width = maxSize;
+                    } else if (height >= width && height > maxSize) {
+                        width = Math.round(width * maxSize / height);
+                        height = maxSize;
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    const compressed = canvas.toDataURL('image/jpeg', 0.72);
+                    document.getElementById('pPhotoPreview').src = compressed;
                 };
-                reader.readAsDataURL(file);
-            }
+                img.src = evt.target.result;
+            };
+
+            reader.readAsDataURL(file);
         };
 
         window.handleSavePlayer = async function(e) {
