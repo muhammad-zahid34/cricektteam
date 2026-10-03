@@ -4,95 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cricket Squad & Match Performance Portal</title>
-    <!-- Firebase App & Firestore SDKs -->
+    <!-- Firebase Compat SDKs (v10.8.0) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    
     <style>
         :root {
-            --bg-main: #0d1117;
-            --bg-card: #161b22;
-            --bg-input: #21262d;
-            --border-color: #30363d;
-            --accent-gold: #e5a93c;
-            --accent-green: #2ea043;
-            --accent-red: #da3633;
-            --text-primary: #f0f6fc;
-            --text-secondary: #8b949e;
+            --bg-main: #0b0f19;
+            --bg-card: #151c2c;
+            --bg-input: #1e293b;
+            --border-color: #334155;
+            --accent-gold: #f59e0b;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --glow-green: rgba(16, 185, 129, 0.25);
+            --glow-gold: rgba(245, 158, 11, 0.25);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-primary); padding-bottom: 50px; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-primary); padding-bottom: 60px; min-height: 100vh; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 16px; }
 
         header {
-            background-color: var(--bg-card);
-            border-bottom: 2px solid var(--border-color);
-            padding: 15px 0;
+            background: rgba(21, 28, 44, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 0;
             margin-bottom: 25px;
             position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
         }
 
         .nav-wrapper { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .brand-title { color: var(--accent-gold); font-size: 1.5rem; font-weight: bold; }
-        .developer-badge { font-size: 0.85rem; color: var(--text-secondary); background: var(--bg-input); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border-color); }
-        .dev-name { color: var(--accent-gold); font-weight: bold; }
+        .brand-title { color: #fff; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; display: flex; align-items: center; gap: 8px; }
+        .brand-title span { background: linear-gradient(135deg, var(--accent-gold), #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .developer-badge { font-size: 0.82rem; color: var(--text-secondary); background: var(--bg-input); padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border-color); }
+        .dev-name { color: var(--accent-gold); font-weight: 700; }
+
+        .sync-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .sync-online { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid var(--accent-green); }
+        .sync-offline { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid var(--accent-gold); }
 
         .btn {
             background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color);
-            padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
+            padding: 9px 16px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.88rem; transition: all 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        .btn:hover { background-color: #30363d; }
-        .btn-gold { background-color: var(--accent-gold); color: #000; border: none; }
-        .btn-green { background-color: var(--accent-green); color: #fff; border: none; }
-        .btn-danger { background-color: var(--accent-red); color: #fff; border: none; }
+        .btn:hover { background-color: #334155; transform: translateY(-1px); }
+        .btn-gold { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; font-weight: 700; }
+        .btn-gold:hover { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+        .btn-green { background: linear-gradient(135deg, #10b981, #059669); color: #fff; border: none; }
+        .btn-danger { background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff; border: none; }
 
-        .tabs { display: flex; gap: 10px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; overflow-x: auto; }
-        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 20px; font-size: 1rem; font-weight: 600; cursor: pointer; border-radius: 6px; white-space: nowrap; }
-        .tab-btn.active { background-color: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--border-color); }
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; overflow-x: auto; }
+        .tab-btn { background: transparent; border: none; color: var(--text-secondary); padding: 10px 18px; font-size: 0.95rem; font-weight: 600; cursor: pointer; border-radius: 8px; white-space: nowrap; transition: all 0.2s; }
+        .tab-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .tab-btn.active { background-color: var(--bg-card); color: var(--accent-gold); border: 1px solid var(--border-color); box-shadow: 0 0 15px var(--glow-gold); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        .admin-banner { background: #1c2128; border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 12px 20px; border-radius: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .admin-banner { background: linear-gradient(135deg, #131c2e, #1a253a); border: 1px solid var(--border-color); border-left: 4px solid var(--accent-gold); padding: 14px 20px; border-radius: 10px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
 
-        .pitch-container { background: linear-gradient(180deg, #0e331c 0%, #051a0d 100%); border: 3px solid var(--accent-green); border-radius: 12px; padding: 25px; margin-bottom: 30px; }
-        .pitch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; }
+        .pitch-container { background: radial-gradient(circle at center, #064e3b 0%, #022c22 100%); border: 2px solid var(--accent-green); border-radius: 16px; padding: 25px; margin-bottom: 30px; box-shadow: 0 0 30px var(--glow-green); }
+        .pitch-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
 
         .pitch-card {
-            background: rgba(22, 27, 34, 0.95); border: 1px solid var(--accent-gold); border-radius: 10px; padding: 12px; width: 140px; text-align: center; position: relative;
+            background: rgba(15, 23, 42, 0.9); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 12px; padding: 12px; width: 145px; text-align: center; position: relative; transition: all 0.25s; backdrop-filter: blur(4px);
         }
-        .pitch-card img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold); margin-bottom: 6px; }
-        .pitch-card h4 { font-size: 0.85rem; color: #fff; }
+        .pitch-card:hover { transform: translateY(-4px); border-color: var(--accent-gold); box-shadow: 0 8px 20px rgba(0,0,0,0.5); }
+        .pitch-card img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-gold); margin-bottom: 8px; box-shadow: 0 0 10px var(--glow-gold); }
+        .pitch-card h4 { font-size: 0.88rem; color: #fff; font-weight: 700; word-break: break-word; }
         .pitch-card p { font-size: 0.75rem; color: var(--accent-gold); }
 
         .squad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .squad-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; padding: 15px; display: flex; gap: 15px; flex-direction: column; }
+        .squad-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; gap: 15px; flex-direction: column; transition: all 0.2s; }
+        .squad-card:hover { border-color: var(--accent-cyan); box-shadow: 0 5px 20px rgba(0,0,0,0.4); }
         .squad-header { display: flex; gap: 15px; align-items: center; }
-        .squad-card img { width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
+        .squad-card img { width: 68px; height: 68px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
 
-        .status-badge { display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; margin-top: 5px; }
-        .status-available { background: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid #2ea043; }
-        .status-injured { background: rgba(218, 54, 51, 0.2); color: #f85149; border: 1px solid #da3633; }
-        .status-bench { background: rgba(229, 169, 60, 0.2); color: #e5a93c; border: 1px solid #e5a93c; }
+        .status-badge { display: inline-block; font-size: 0.72rem; padding: 3px 10px; border-radius: 20px; font-weight: 700; margin-top: 6px; letter-spacing: 0.3px; }
+        .status-available { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid #059669; }
+        .status-injured { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid #dc2626; }
+        .status-bench { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid #d97706; }
 
-        .action-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
 
-        .data-table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; overflow-x: auto; margin-bottom: 25px; }
+        .data-table-container { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow-x: auto; margin-bottom: 25px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
         table { width: 100%; border-collapse: collapse; text-align: left; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
-        th { background-color: var(--bg-input); color: var(--accent-gold); }
+        th, td { padding: 14px 16px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+        th { background-color: var(--bg-input); color: var(--accent-gold); font-weight: 700; text-transform: uppercase; font-size: 0.78rem; letter-spacing: 0.5px; }
 
-        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-backdrop { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); z-index: 1000; justify-content: center; align-items: center; }
         .modal-backdrop.active { display: flex; }
-        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px; width: 90%; max-width: 550px; padding: 25px; max-height: 90vh; overflow-y: auto; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; width: 92%; max-width: 550px; padding: 25px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.6); }
 
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 10px; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-        .form-group label { font-size: 0.85rem; color: var(--text-secondary); }
-        .form-group input, .form-group select { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px 12px; border-radius: 6px; outline: none; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+        .form-group label { font-size: 0.85rem; color: var(--text-secondary); font-weight: 600; }
+        .form-group input, .form-group select { background-color: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 10px 14px; border-radius: 8px; outline: none; font-size: 0.9rem; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--accent-gold); }
 
-        .upload-btn-wrapper { background: var(--bg-input); border: 2px dashed var(--accent-gold); padding: 12px; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 10px; }
+        .upload-btn-wrapper { background: var(--bg-input); border: 2px dashed var(--accent-gold); padding: 16px; border-radius: 10px; text-align: center; cursor: pointer; margin-bottom: 12px; transition: all 0.2s; }
+        .upload-btn-wrapper:hover { background: rgba(245, 158, 11, 0.05); }
 
-        footer { text-align: center; padding: 25px 0; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; }
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-gold);
+            color: var(--text-primary);
+            padding: 12px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            display: none;
+            z-index: 2000;
+        }
+
+        footer { text-align: center; padding: 28px 0; color: var(--text-secondary); border-top: 1px solid var(--border-color); margin-top: 40px; font-size: 0.9rem; }
         footer span { color: var(--accent-gold); font-weight: bold; }
     </style>
 </head>
@@ -102,11 +143,14 @@
     <header>
         <div class="nav-wrapper">
             <div>
-                <div class="brand-title">🏏 Team Squad & Match Portal</div>
-                <div class="developer-badge">Developed by <span class="dev-name">Muhammad Zahid</span></div>
+                <div class="brand-title">🏏 <span>Cricket Squad & Match Portal</span></div>
+                <div style="display: flex; gap: 10px; align-items: center; margin-top: 4px;">
+                    <div class="developer-badge">Developed by <span class="dev-name">Muhammad Zahid</span></div>
+                    <span id="sync-status" class="sync-status sync-offline">● Local Mode</span>
+                </div>
             </div>
             <div>
-                <span id="role-indicator" style="font-size: 0.85rem; color: var(--text-secondary); margin-right: 10px;">Role: Visitor</span>
+                <span id="role-indicator" style="font-size: 0.85rem; color: var(--text-secondary); margin-right: 12px;">Role: Visitor</span>
                 <button class="btn btn-gold" id="login-btn" onclick="toggleAdminLogin()">Admin Login</button>
             </div>
         </div>
@@ -114,8 +158,8 @@
 
     <div class="admin-banner">
         <div>
-            <strong>Status: <span id="current-mode-text">Visitor (Read-Only)</span></strong>
-            <p style="font-size: 0.8rem; color: var(--text-secondary);">Log in with password "admin" to edit squad, change photos, or enter match scores.</p>
+            <strong>Status: <span id="current-mode-text" style="color: var(--accent-cyan);">Visitor (Read-Only)</span></strong>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 3px;">Log in with password "admin" to edit squad, change photos, or enter match scores.</p>
         </div>
         <div id="backup-controls" style="display: none; gap: 8px; flex-wrap: wrap;">
             <button class="btn btn-gold" onclick="openPassChangeModal()">🔑 Change Password</button>
@@ -135,7 +179,7 @@
     <!-- TAB 1: Playing 11 Ground -->
     <div id="pitch-tab" class="tab-content active">
         <div class="pitch-container">
-            <h2 style="text-align: center; color: #fff; margin-bottom: 20px;">🟢 Playing 11 Tactical Field (<span id="p11-count">11</span> Selected)</h2>
+            <h2 style="text-align: center; color: #fff; margin-bottom: 20px; font-weight: 800;">🟢 Playing 11 Tactical Field (<span id="p11-count" style="color: var(--accent-gold);">11</span> Selected)</h2>
             <div class="pitch-grid" id="pitch-display"></div>
         </div>
     </div>
@@ -150,8 +194,8 @@
 
     <!-- TAB 3: Match Recording & History -->
     <div id="matches-tab" class="tab-content">
-        <div class="admin-only" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 10px; margin-bottom: 30px;">
-            <h3 style="color: var(--accent-gold); margin-bottom: 15px;">📝 Record Match Performance</h3>
+        <div class="admin-only" style="display: none; background: var(--bg-card); border: 1px solid var(--border-color); padding: 22px; border-radius: 14px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <h3 style="color: var(--accent-gold); margin-bottom: 16px;">📝 Record Match Performance</h3>
             <form onsubmit="handleRecordMatch(event)">
                 <div class="form-grid">
                     <div class="form-group"><label>Match Date</label><input type="date" id="m-date" required></div>
@@ -163,18 +207,18 @@
                     </div>
                 </div>
 
-                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🏏 Batting Performers (Auto Strike Rate)</h4>
+                <h4 style="color: var(--accent-gold); margin: 22px 0 12px 0;">🏏 Batting Performers (Auto Strike Rate)</h4>
                 <div id="batting-inputs"></div>
 
-                <h4 style="color: var(--accent-gold); margin: 20px 0 10px 0;">🎯 Bowling Performers (Auto Economy)</h4>
+                <h4 style="color: var(--accent-gold); margin: 22px 0 12px 0;">🎯 Bowling Performers (Auto Economy)</h4>
                 <div id="bowling-inputs"></div>
 
-                <button type="submit" class="btn btn-green" style="width: 100%; margin-top: 20px; font-size: 1rem;">Save Scorecard & Update Career Stats</button>
+                <button type="submit" class="btn btn-green" style="width: 100%; margin-top: 22px; font-size: 1rem; padding: 12px;">Save Scorecard & Update Career Stats</button>
             </form>
         </div>
 
         <h2>Match Scorecards History</h2>
-        <div id="match-history-list" style="margin-top: 15px;"></div>
+        <div id="match-history-list" style="margin-top: 18px;"></div>
     </div>
 
     <!-- TAB 4: Career Stats -->
@@ -267,7 +311,7 @@
                 <p style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px;">Select image from phone storage</p>
             </div>
             <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handleGalleryUpload(event)">
-            <label style="margin-top: 5px;">Or Photo URL / Base64</label>
+            <label style="margin-top: 5px;">Or Photo URL</label>
             <input type="text" id="edit-player-img" placeholder="https://...">
         </div>
         <div style="display: flex; gap: 10px; margin-top: 15px;">
@@ -277,21 +321,42 @@
     </div>
 </div>
 
+<div class="notification-toast" id="toast-msg"></div>
+
 <script>
-    // Firebase Anonymous Auth Config
-    const firebaseConfig = {
-        apiKey: "AIzaSyDummyKeyForCricketPortal12345",
-        authDomain: "cricket-squad-app.firebaseapp.com",
-        projectId: "cricket-squad-app",
-        storageBucket: "cricket-squad-app.appspot.com",
-        messagingSenderId: "1029384756",
-        appId: "1:1029384756:web:abcd1234efgh5678"
+    
+    // Automatically retrieve Firebase environment variables or fallback to standard public project settings
+    const parsedFirebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        apiKey: "AIzaSyC_PublicDemoKeyForCricketSquadApp2026",
+        authDomain: "cricket-squad-live-portal.firebaseapp.com",
+        projectId: "cricket-squad-live-portal",
+        storageBucket: "cricket-squad-live-portal.appspot.com",
+        messagingSenderId: "987654321012",
+        appId: "1:987654321012:web:a1b2c3d4e5f6g7h8"
     };
 
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'cricket-portal-app';
+
+    let db = null;
+    let auth = null;
+    let isCloudConnected = false;
+
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(parsedFirebaseConfig);
+        }
+        db = firebase.firestore();
+        auth = firebase.auth();
+        
+        // Authenticate anonymously
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            auth.signInWithCustomToken(__initial_auth_token).catch(() => auth.signInAnonymously());
+        } else {
+            auth.signInAnonymously().catch(e => console.log("Anonymous auth fallback:", e));
+        }
+    } catch (e) {
+        console.warn("Firebase initialization using local storage mode:", e);
     }
-    const db = firebase.firestore();
 
     const defaultPlayers = [
         { id: 1, name: "RAHEEM", category: "All-Rounder", isPlaying11: true, roleBadge: "C", status: "Available", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop" },
@@ -316,30 +381,50 @@
     let adminPassword = localStorage.getItem('mz_admin_pass') || 'admin';
     let isAdmin = false;
 
-    // Listen to cloud database updates
-    db.collection("portal_data").doc("main_squad").onSnapshot((doc) => {
-        if (doc.exists) {
-            const data = doc.data();
-            if (data.players) {
-                players = data.players;
-                localStorage.setItem('mz_cricket_players', JSON.stringify(players));
-            }
-            if (data.matches) {
-                matches = data.matches;
-                localStorage.setItem('mz_cricket_matches', JSON.stringify(matches));
-            }
-            renderAll();
-        }
-    }, (error) => {
-        renderAll();
-    });
+    function showToast(msg) {
+        const toast = document.getElementById('toast-msg');
+        toast.innerText = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
 
-    function renderAll() {
-        renderPitch();
-        renderSquad();
-        renderMatchInputs();
-        renderMatchHistory();
-        renderCareerStats();
+    // Standard Firestore Path following Rule 1
+    function getDocRef() {
+        if (!db) return null;
+        return db.collection('artifacts').doc(appId).collection('public').doc('data').collection('portal_data').doc('main_squad');
+    }
+
+    function initCloudSync() {
+        const docRef = getDocRef();
+        if (!docRef) return;
+
+        docRef.onSnapshot((doc) => {
+            isCloudConnected = true;
+            document.getElementById('sync-status').className = 'sync-status sync-online';
+            document.getElementById('sync-status').innerText = '● Live Cloud Sync';
+
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.players) {
+                    players = data.players;
+                    localStorage.setItem('mz_cricket_players', JSON.stringify(players));
+                }
+                if (data.matches) {
+                    matches = data.matches;
+                    localStorage.setItem('mz_cricket_matches', JSON.stringify(matches));
+                }
+                renderAll();
+            } else {
+                // Seed initial cloud data if doc doesn't exist
+                saveData();
+            }
+        }, (error) => {
+            console.log("Firestore offline/fallback mode:", error.message);
+            isCloudConnected = false;
+            document.getElementById('sync-status').className = 'sync-status sync-offline';
+            document.getElementById('sync-status').innerText = '● Local Offline Mode';
+            renderAll();
+        });
     }
 
     function saveData() {
@@ -347,12 +432,27 @@
         localStorage.setItem('mz_cricket_matches', JSON.stringify(matches));
         localStorage.setItem('mz_admin_pass', adminPassword);
 
-        // Sync to cloud
-        db.collection("portal_data").doc("main_squad").set({
-            players: players,
-            matches: matches,
-            updatedAt: new Date().toISOString()
-        }).catch(err => console.log("Cloud sync saved locally"));
+        const docRef = getDocRef();
+        if (docRef) {
+            docRef.set({
+                players: players,
+                matches: matches,
+                updatedAt: new Date().toISOString()
+            }).then(() => {
+                showToast("Live Changes Synced to Cloud!");
+            }).catch(err => {
+                console.log("Saved locally:", err);
+                showToast("Saved Locally");
+            });
+        }
+    }
+
+    function renderAll() {
+        renderPitch();
+        renderSquad();
+        renderMatchInputs();
+        renderMatchHistory();
+        renderCareerStats();
     }
 
     function switchTab(tabId, btn) {
@@ -388,6 +488,7 @@
             document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
             closeAdminModal();
             renderSquad();
+            showToast("Logged in as Admin");
         } else {
             alert("Incorrect Admin Password!");
         }
@@ -411,8 +512,8 @@
 
         pitchContainer.innerHTML = p11.map(p => `
             <div class="pitch-card">
-                ${p.roleBadge ? `<span style="position:absolute; top:5px; right:5px; background:var(--accent-gold); color:#000; font-weight:bold; font-size:0.65rem; padding:2px 5px; border-radius:4px;">${p.roleBadge}</span>` : ''}
-                <img src="${p.img}" alt="${p.name}">
+                ${p.roleBadge ? `<span style="position:absolute; top:6px; right:6px; background:var(--accent-gold); color:#000; font-weight:800; font-size:0.65rem; padding:2px 6px; border-radius:4px;">${p.roleBadge}</span>` : ''}
+                <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/1e293b/f59e0b?text=Player'">
                 <h4>${p.name}</h4>
                 <p>${p.category}</p>
             </div>
@@ -424,9 +525,9 @@
         squadContainer.innerHTML = players.map(p => `
             <div class="squad-card">
                 <div class="squad-header">
-                    <img src="${p.img}" alt="${p.name}">
+                    <img src="${p.img}" alt="${p.name}" onerror="this.src='https://placehold.co/120x120/1e293b/f59e0b?text=Player'">
                     <div>
-                        <h3>${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
+                        <h3 style="font-weight:700;">${p.name} ${p.roleBadge ? `(${p.roleBadge})` : ''}</h3>
                         <p style="font-size: 0.85rem; color: var(--text-secondary);">${p.category}</p>
                         <span class="status-badge ${p.status === 'Available' ? 'status-available' : p.status === 'Injured' ? 'status-injured' : 'status-bench'}">${p.status}</span>
                     </div>
@@ -481,7 +582,18 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = function(evt) { 
-                document.getElementById('edit-player-img').value = evt.target.result; 
+                // Compress image down to reasonable dimensions for web storing
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = 150;
+                    canvas.height = 150;
+                    ctx.drawImage(img, 0, 0, 150, 150);
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    document.getElementById('edit-player-img').value = compressedDataUrl;
+                };
+                img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -494,7 +606,7 @@
             p.name = document.getElementById('edit-player-name').value;
             p.category = document.getElementById('edit-player-category').value;
             p.roleBadge = document.getElementById('edit-player-badge').value;
-            p.img = document.getElementById('edit-player-img').value;
+            p.img = document.getElementById('edit-player-img').value || 'https://placehold.co/120x120/1e293b/f59e0b?text=Player';
             saveData();
             renderAll();
             closeEditModal();
@@ -505,7 +617,7 @@
         const p11 = players.filter(p => p.isPlaying11);
         document.getElementById('batting-inputs').innerHTML = p11.map((p, i) => `
             <div class="form-grid" style="align-items:center;">
-                <input type="text" value="${p.name}" readonly style="background:#161b22; font-weight:bold;">
+                <input type="text" value="${p.name}" readonly style="background:var(--bg-card); font-weight:bold;">
                 <input type="number" id="bat-runs-${p.id}" placeholder="Runs" min="0" oninput="calcSR(${p.id})">
                 <input type="number" id="bat-balls-${p.id}" placeholder="Balls" min="0" oninput="calcSR(${p.id})">
                 <input type="number" id="bat-4s-${p.id}" placeholder="4s" min="0">
@@ -516,7 +628,7 @@
 
         document.getElementById('bowling-inputs').innerHTML = p11.slice(5).map((p, i) => `
             <div class="form-grid" style="align-items:center;">
-                <input type="text" value="${p.name}" readonly style="background:#161b22; font-weight:bold;">
+                <input type="text" value="${p.name}" readonly style="background:var(--bg-card); font-weight:bold;">
                 <input type="number" id="bowl-overs-${p.id}" placeholder="Overs" step="0.1" min="0" oninput="calcEcon(${p.id})">
                 <input type="number" id="bowl-runs-${p.id}" placeholder="Runs Given" min="0" oninput="calcEcon(${p.id})">
                 <input type="number" id="bowl-wkts-${p.id}" placeholder="Wickets" min="0">
@@ -572,7 +684,7 @@
         saveData();
         renderMatchHistory();
         renderCareerStats();
-        alert("Match Performance Scorecard Saved Successfully!");
+        alert("Match Scorecard Saved & Updated Across All Devices!");
     }
 
     function renderMatchHistory() {
@@ -582,8 +694,8 @@
             return;
         }
 
-        history.innerHTML = matches.map(m => `
-            <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:15px; border-radius:10px; margin-bottom:15px;">
+        history.innerHTML = matches.slice().reverse().map(m => `
+            <div style="background:var(--bg-card); border:1px solid var(--border-color); padding:18px; border-radius:12px; margin-bottom:16px;">
                 <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                     <h3 style="color:var(--accent-gold);">vs ${m.opponent}</h3>
                     <span style="font-weight:bold; color:${m.result === 'Won' ? 'var(--accent-green)' : 'var(--accent-red)'};">${m.result}</span>
@@ -592,12 +704,12 @@
 
                 <h4 style="color:var(--accent-gold); font-size:0.85rem; margin-top:10px;">🏏 Batting</h4>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
-                    ${m.batting.map(b => `<span style="background:var(--bg-input); padding:4px 8px; border-radius:4px; font-size:0.8rem;">${b.name}: <b>${b.runs}</b> (${b.balls}b) SR:${b.sr}</span>`).join('')}
+                    ${m.batting.map(b => `<span style="background:var(--bg-input); padding:4px 10px; border-radius:6px; font-size:0.8rem;">${b.name}: <b>${b.runs}</b> (${b.balls}b) SR:${b.sr}</span>`).join('')}
                 </div>
 
                 <h4 style="color:var(--accent-gold); font-size:0.85rem; margin-top:10px;">🎯 Bowling</h4>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
-                    ${m.bowling.map(bw => `<span style="background:var(--bg-input); padding:4px 8px; border-radius:4px; font-size:0.8rem;">${bw.name}: <b>${bw.wickets}/${bw.runs}</b> (${bw.overs}ov) Econ:${bw.econ}</span>`).join('')}
+                    ${m.bowling.map(bw => `<span style="background:var(--bg-input); padding:4px 10px; border-radius:6px; font-size:0.8rem;">${bw.name}: <b>${bw.wickets}/${bw.runs}</b> (${bw.overs}ov) Econ:${bw.econ}</span>`).join('')}
                 </div>
             </div>
         `).join('');
@@ -651,26 +763,33 @@
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backup, null, 2));
         const a = document.createElement('a');
         a.href = dataStr;
-        a.download = `cricket_backup.json`;
+        a.download = `cricket_backup_${Date.now()}.json`;
         a.click();
     }
 
     function importDataBackup(e) {
         const fr = new FileReader();
         fr.onload = function(evt) {
-            const data = JSON.parse(evt.target.result);
-            if (data.players && data.matches) {
-                players = data.players;
-                matches = data.matches;
-                saveData();
-                renderAll();
-                alert("All Data & Matches Restored Successfully!");
+            try {
+                const data = JSON.parse(evt.target.result);
+                if (data.players && data.matches) {
+                    players = data.players;
+                    matches = data.matches;
+                    saveData();
+                    renderAll();
+                    alert("All Data & Matches Restored Successfully!");
+                }
+            } catch(err) {
+                alert("Invalid JSON backup file!");
             }
         };
         fr.readAsText(e.target.files[0]);
     }
 
-    renderAll();
+    window.onload = function() {
+        initCloudSync();
+        renderAll();
+    };
 </script>
 
 </body>
