@@ -453,7 +453,7 @@
         async function setupFirestoreListeners() {
             if (!currentUser) return;
 
-            const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'players');
+            const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data', 'players');
             const legacySquadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
 
             // First migrate old squad_data (if it exists) into individual player docs.
@@ -518,7 +518,7 @@
             if (!currentUser) return;
 
             try {
-                const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'players');
+                const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data', 'players');
                 const newIds = new Set(newSquad.map(p => p.id));
 
                 await Promise.all(newSquad.map(p =>
@@ -532,7 +532,7 @@
                 ));
             } catch (err) {
                 console.error('Error saving players to Firestore:', err);
-                alert('Player save failed. Please check Firebase/Firestore settings and try again.');
+                alert('Player save failed: ' + (err?.code || 'unknown-error') + '\n' + (err?.message || 'Please check Firebase/Firestore settings and try again.'));
             }
         }
 
