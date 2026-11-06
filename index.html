@@ -3,94 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cricket Squad & Match Data Portal</title>
+    <title>Shaheen Team | Cricket Squad &amp; Match Portal</title>
     <!-- Tailwind CSS CDN -->
+    <script>
+        // Shows any JavaScript error on screen (helps debugging on phones)
+        (function () {
+            function show(msg) {
+                var b = document.getElementById('jsErrBanner');
+                if (!b) {
+                    b = document.createElement('div'); b.id = 'jsErrBanner';
+                    b.style.cssText = 'position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#b91c1c;color:#fff;font:12px/1.4 monospace;padding:8px 12px;white-space:pre-wrap;max-height:35vh;overflow:auto';
+                    (document.body || document.documentElement).appendChild(b);
+                }
+                b.textContent = 'JS ERROR: ' + msg;
+            }
+            window.addEventListener('error', function (e) {
+                if (/tailwind/i.test(e.message || '')) return;
+                var hint = /import/i.test(e.message || '') ? '\n>> Firebase ki "import ..." lines hata dein, sirf { ... } wala config rakhein.' : '';
+                show((e.message || 'error') + (e.lineno ? ' (line ' + e.lineno + ')' : '') + hint);
+            });
+            window.addEventListener('unhandledrejection', function (e) { show(String(e.reason && e.reason.message || e.reason)); });
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;0,800;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        gold: '#e5a93c',
-                        'gold-hover': '#cb922b',
+                        gold: '#f5b301',
+                        'gold-hover': '#d99a00',
                         pitch: '#1b4332',
                         'pitch-dark': '#081c15',
                         'card-bg': '#141e28',
                         'panel-bg': '#0f172a'
                     },
                     fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
+                        sans: ['Poppins', 'sans-serif'],
                     }
                 }
             }
         }
     </script>
     <style>
+        :root { --navy:#050d1f; --navy2:#0a1a38; --lime:#52e00f; --lime-d:#1f8f05; --gold:#f5b301; }
+        html { scroll-behavior: smooth; }
+        .pom-card { display:flex; align-items:center; gap:1rem; padding:.8rem; border-radius:1rem; border:1px solid rgba(245,179,1,.5);
+            background: linear-gradient(100deg, rgba(245,179,1,.2), rgba(82,224,15,.08) 60%, transparent); }
+        .pom-photo { width:84px; height:104px; flex-shrink:0; border-radius:.8rem; object-fit:cover; object-position:top; background:#10213f;
+            border:2px solid var(--gold); box-shadow:0 0 18px rgba(245,179,1,.4); }
+        .pom-tag { display:inline-flex; align-items:center; gap:.4rem; font-size:.65rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+            color:#0a1226; background:var(--gold); padding:.2rem .6rem; border-radius:999px; }
+        .pom-chip { display:inline-block; font-size:.72rem; font-weight:600; padding:.25rem .65rem; border-radius:999px; background:rgba(0,0,0,.35); border:1px solid rgba(255,255,255,.12); }
+        .stat-chip { padding:.45rem 1rem; border-radius:999px; font-size:.78rem; font-weight:600; color:#cbd5e1; background:#0b1a38; border:1px solid rgba(255,255,255,.12); transition:all .2s; }
+        .stat-chip:hover { border-color: var(--lime); color:#fff; }
+        .stat-chip.active { background: linear-gradient(180deg,#3fcf0a,#1f8f05); color:#fff; border-color: rgba(160,255,100,.55); box-shadow:0 0 14px rgba(82,224,15,.3); }
+        .dev-credit { font-family: 'Dancing Script', cursive; font-weight: 700; letter-spacing: .02em; line-height: 1.1;
+            background: linear-gradient(90deg,#f5b301,#fff3b0,#52e00f,#f5b301); background-size: 250% 100%;
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+            animation: devShine 5s linear infinite; filter: drop-shadow(0 0 8px rgba(245,179,1,.35)); }
+        @keyframes devShine { to { background-position: 250% 0; } }
+        .hidden { display: none; }
         body {
-            background-color: #0b1120;
-            color: #f3f4f6;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background: radial-gradient(1200px 500px at 50% -10%, #0e2a5c55, transparent), #050d1f;
+            color: #f3f4f6; font-family: 'Poppins', sans-serif; min-height: 100vh;
         }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
-        }
-        /* Tactical Field Background Pattern */
-        .ground-bg {
-            background: radial-gradient(circle, #2d6a4f 0%, #1b4332 70%, #081c15 100%);
-            border: 3px solid #40916c;
-        }
-        .pitch-rect {
-            background-color: #d4a373;
-            border: 1px dashed #fefae0;
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #07122a; }
+        ::-webkit-scrollbar-thumb { background: #1f8f05; border-radius: 4px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { scrollbar-width: none; }
+        .it { font-style: italic; font-weight: 800; letter-spacing: -.01em; }
+
+        /* ===== Header ===== */
+        .site-header { background: linear-gradient(180deg,#081a3d 0%,#050d1f 100%); border-bottom: 1px solid rgba(82,224,15,.3); box-shadow: 0 8px 30px rgba(0,0,0,.55); }
+        .brand-logo { width: 54px; height: 54px; border-radius: 16px; display:flex; align-items:center; justify-content:center; font-size: 26px; color:#fff;
+            background: linear-gradient(135deg,#52e00f,#0c5a06); box-shadow: 0 0 22px rgba(82,224,15,.45), inset 0 0 0 2px rgba(255,255,255,.25); }
+        .brand-title { font-style: italic; font-weight: 800; font-size: 1.7rem; line-height: 1; color:#fff; text-shadow: 0 2px 10px rgba(0,0,0,.6); }
+        .brand-title span { color: var(--lime); }
+        .nav-btn { display:flex; align-items:center; gap:.5rem; padding:.6rem 1.05rem; border-radius:.55rem; font-weight:600; font-size:.85rem;
+            color:#e5edff; white-space:nowrap; transition:all .2s; border:1px solid transparent; background: transparent; }
+        .nav-btn:hover { background: rgba(255,255,255,.08); }
+        .nav-btn.active { background: linear-gradient(180deg,#3fcf0a,#1f8f05); color:#fff; border-color: rgba(160,255,100,.55); box-shadow: 0 0 18px rgba(82,224,15,.4); }
+        .nav-btn i { color: var(--gold); } .nav-btn.active i { color:#fff; }
+        .tagline-badge { clip-path: polygon(14% 0,100% 0,100% 100%,0 100%); background: linear-gradient(135deg,#2fb80a,#0c5a06);
+            padding: .55rem 1.4rem .55rem 2.2rem; font-style: italic; font-weight:700; line-height:1.15; text-align:left; }
+        .tagline-badge b { color: var(--gold); display:block; }
+
+        /* ===== Hero ===== */
+        .hero { position:relative; overflow:hidden; min-height: 280px; display:flex; align-items:center;
+            background:
+              radial-gradient(520px 260px at 78% 85%, rgba(82,224,15,.55), transparent 70%),
+              radial-gradient(400px 200px at 95% 20%, rgba(82,224,15,.25), transparent 70%),
+              linear-gradient(100deg,#050d1f 0%,#0a1f4a 55%,#06260f 100%); }
+        .hero::before { content:""; position:absolute; inset:0 0 auto 0; height:90px; opacity:.9; pointer-events:none;
+            background: radial-gradient(circle, rgba(255,255,255,.95) 0 1.6px, transparent 2.6px) 0 0/34px 20px;
+            -webkit-mask-image: linear-gradient(180deg,#000,transparent); mask-image: linear-gradient(180deg,#000,transparent); }
+        .hero-title { font-size: clamp(2.6rem, 7vw, 5.6rem); line-height:.95; color:#fff; text-shadow: 0 6px 24px rgba(0,0,0,.6); }
+        .hero-title span { color: var(--lime); text-shadow: 0 0 28px rgba(82,224,15,.55); }
+        .hero-sub { font-style: italic; font-weight:600; font-size: clamp(1.1rem,2.4vw,1.9rem); color:#fff; }
+        .hero-players { position:absolute; right:2%; bottom:0; display:none; align-items:flex-end; }
+        @media (min-width: 900px) { .hero-players { display:flex; } }
+        .hero-player { width:150px; height:190px; object-fit:cover; object-position:top; margin-left:-26px; border-radius:1.2rem 1.2rem 0 0;
+            border:2px solid rgba(255,255,255,.18); border-bottom:0; box-shadow: 0 10px 30px rgba(0,0,0,.55); background:#0a1a38; }
+        .hero-player.c { width:200px; height:250px; z-index:3; border-color: var(--lime); }
+        .hero-player.m { width:170px; height:215px; z-index:2; }
+
+        /* ===== Section bars ===== */
+        .sec-bar { display:flex; align-items:center; gap:.9rem; padding:.7rem 1.2rem; position:relative;
+            background: linear-gradient(90deg,#071634,#08204a 60%,transparent); }
+        .sec-bar::after { content:""; position:absolute; left:0; right:0; bottom:0; height:2px; background: linear-gradient(90deg,var(--gold),transparent 60%); }
+        .sec-title { font-size:1.6rem; font-style:italic; font-weight:700; color:#fff; }
+        .btn-outline-gold { border:2px solid var(--gold); color:var(--gold); background: rgba(245,179,1,.06); font-weight:700; font-size:.85rem;
+            padding:.5rem 1.2rem; border-radius:999px; transition:all .2s; white-space:nowrap; }
+        .btn-outline-gold:hover { background: var(--gold); color:#0a1226; box-shadow:0 0 20px rgba(245,179,1,.4); }
+
+        /* ===== Playing 11 pitch ===== */
+        .pitch { position:relative; padding: 2rem 1.4rem 2rem; overflow:hidden;
+            background:
+              repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 70px, transparent 70px 140px),
+              radial-gradient(ellipse at 50% 40%, #3a9d1c 0%, #1f6a14 55%, #0b3a0b 100%); }
+        .pitch::before { content:""; position:absolute; inset:12px 1.5%; border:2px solid rgba(255,255,255,.35); border-radius:60px; pointer-events:none; }
+        .pitch::after { content:""; position:absolute; left:50%; top:0; bottom:0; width:90px; transform:translateX(-50%); background: rgba(212,185,120,.28); pointer-events:none; }
+        .p11-card { position:relative; aspect-ratio: 3/4; border-radius:.8rem; overflow:hidden; border:1px solid rgba(255,255,255,.45);
+            background:#cfd8e6; box-shadow:0 8px 22px rgba(0,0,0,.5); transition: transform .25s, box-shadow .25s; z-index:2; }
+        .p11-card:hover { transform: translateY(-6px) scale(1.03); box-shadow:0 14px 30px rgba(0,0,0,.6), 0 0 0 2px var(--lime); }
+        .p11-card img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+        .p11-label { position:absolute; left:0; right:0; bottom:0; padding:1.4rem .3rem .4rem; text-align:center;
+            background: linear-gradient(180deg,transparent,rgba(3,10,25,.92) 45%); }
+        .p11-label b { display:block; font-size:.78rem; font-weight:600; color:#fff; line-height:1.15; }
+        .p11-label span { display:block; font-size:.7rem; font-weight:600; color: var(--gold); }
+        .cap-chip { position:absolute; top:6px; left:6px; z-index:3; background:var(--gold); color:#0a1226; font-weight:800; font-size:.6rem; padding:2px 7px; border-radius:999px; }
+
+        /* ===== Roster cards ===== */
+        .roster-card { position:relative; aspect-ratio: 4/5; border-radius:1rem; overflow:hidden; background:#10213f;
+            border:2px solid rgba(130,190,255,.45); box-shadow: 0 0 0 1px rgba(0,0,0,.4), 0 12px 30px rgba(0,0,0,.5);
+            transition: transform .25s, box-shadow .25s, border-color .25s; }
+        .roster-card:hover { transform: translateY(-6px); border-color: var(--lime); box-shadow:0 18px 40px rgba(0,0,0,.6), 0 0 26px rgba(82,224,15,.35); }
+        .roster-card > img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+        .roster-label { position:absolute; left:0; right:0; bottom:0; padding:2.6rem .8rem .8rem; text-align:center;
+            background: linear-gradient(180deg,transparent,rgba(3,10,25,.95) 55%); }
+        .roster-label b { display:block; font-size:1.15rem; font-weight:600; color:#fff; line-height:1.2; }
+        .roster-label span { display:block; font-size:1rem; font-weight:700; color: var(--lime); }
+        .badge-pill { position:absolute; z-index:3; font-size:.62rem; font-weight:800; padding:4px 10px; border-radius:999px; box-shadow:0 2px 8px rgba(0,0,0,.4); }
+        .admin-bar { background: rgba(3,10,25,.92); border-top:1px solid rgba(255,255,255,.12); padding:.6rem; display:flex; align-items:center; justify-content:space-between; gap:.5rem; font-size:.72rem; }
+
+        /* ===== Footer ===== */
+        .site-footer { background: linear-gradient(180deg,#071634,#040a18); border-top:2px solid rgba(245,179,1,.35); overflow:hidden; }
+        .soc { width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.25rem; transition: transform .2s; }
+        .soc:hover { transform: translateY(-3px) scale(1.08); }
+        .passion { clip-path: polygon(10% 0,100% 0,100% 100%,0 100%); background: linear-gradient(135deg,#2fb80a,#0c5a06); padding:1rem 1.6rem 1rem 3rem; font-style:italic; font-weight:700; }
+
+        @media (max-width: 640px) {
+            .brand-title { font-size: 1.25rem; }
+            .sec-title { font-size: 1.25rem; }
+            .roster-label b { font-size: .95rem; } .roster-label span { font-size:.8rem; }
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen justify-between selection:bg-gold selection:text-black">
 
     <!-- Header Navbar -->
-    <header class="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 shadow-lg">
-        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-gold to-yellow-200 flex items-center justify-center text-slate-950 font-bold text-xl shadow-md">
-                    <i class="fa-solid font-bold">🏏</i>
-                </div>
+    <header class="site-header sticky top-0 z-40">
+        <div class="max-w-[1500px] mx-auto px-4 py-2.5 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <a href="#" onclick="switchTab('field');return false;" class="flex items-center gap-3 shrink-0">
+                <div class="brand-logo"><i class="fa-solid fa-dove"></i></div>
                 <div>
-                    <h1 class="text-lg md:text-xl font-bold tracking-tight text-white flex items-center gap-2">
-                        Cricket Squad & Match Portal
-                        <span id="syncStatusBadge" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                            Live Sync
+                    <div class="brand-title">SHAHEEN <span>TEAM</span></div>
+                    <div class="text-[13px] font-semibold italic text-white/90 flex items-center gap-2">
+                        Cricket Squad &amp; Match Portal
+                        <span id="syncStatusBadge" class="text-[10px] not-italic px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Live
                         </span>
-                    </h1>
-                    <p class="text-xs text-slate-400">Developed by <span class="text-gold font-medium">Muhammad Zahid</span></p>
+                    </div>
+                    <div class="dev-credit text-lg mt-0.5">Developed by Muhammad Zahid</div>
                 </div>
-            </div>
+            </a>
 
-            <!-- Role & Admin Buttons -->
-            <div class="flex items-center space-x-3">
-                <div class="hidden sm:block text-right text-xs">
-                    <span class="text-slate-400 block">Current Role:</span>
+            <nav class="order-3 lg:order-none w-full lg:w-auto flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('field')" id="tab-field" class="nav-btn active"><i class="fa-solid fa-house"></i> Home</button>
+                <button onclick="switchTab('squad')" id="tab-squad" class="nav-btn"><i class="fa-solid fa-users"></i> Our Team</button>
+                <button onclick="switchTab('matches')" id="tab-matches" class="nav-btn"><i class="fa-solid fa-trophy"></i> Matches</button>
+                <button onclick="switchTab('stats')" id="tab-stats" class="nav-btn"><i class="fa-solid fa-chart-column"></i> Stats</button>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <div class="hidden xl:block tagline-badge text-sm">Play United<b>Win Together</b></div>
+                <div class="hidden sm:block text-right text-[11px] leading-tight">
+                    <span class="text-slate-400 block">Role</span>
                     <span id="roleLabel" class="font-semibold text-emerald-400">Visitor (Read-Only)</span>
                 </div>
-                <button id="adminLoginBtn" onclick="openAdminModal()" class="bg-gold hover:bg-gold-hover text-slate-950 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all flex items-center gap-2 shadow-lg hover:shadow-gold/20">
+                <button id="adminLoginBtn" onclick="openAdminModal()" class="bg-gold hover:bg-gold-hover text-slate-950 px-4 py-2 rounded-lg font-bold text-xs md:text-sm transition-all flex items-center gap-2 shadow-lg">
                     <i class="fa-solid fa-lock"></i> <span id="adminBtnText">Admin Login</span>
                 </button>
             </div>
@@ -98,10 +207,10 @@
     </header>
 
     <!-- Admin Status Info Bar -->
-    <div id="adminNoticeBar" class="bg-slate-800/80 border-b border-slate-700/60 px-4 py-2 text-xs text-slate-300">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div id="adminNoticeBar" class="bg-[#07122a] border-b border-white/5 px-4 py-2 text-xs text-slate-300">
+        <div class="max-w-[1500px] mx-auto flex items-center justify-between gap-3">
             <p id="noticeText"><i class="fa-solid fa-circle-info text-gold mr-1"></i> Log in with admin password to edit squad, change photos, or add match scorecards.</p>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-3 shrink-0">
                 <button onclick="exportDataBackup()" class="text-slate-400 hover:text-white underline text-xs"><i class="fa-solid fa-download mr-1"></i> Export JSON</button>
                 <button id="importBtn" onclick="triggerImport()" class="hidden text-slate-400 hover:text-white underline text-xs"><i class="fa-solid fa-upload mr-1"></i> Import JSON</button>
                 <input type="file" id="jsonInput" class="hidden" accept=".json" onchange="importDataBackup(event)">
@@ -110,56 +219,45 @@
     </div>
 
     <!-- Main Content Layout -->
-    <main class="max-w-7xl mx-auto px-4 py-6 w-full flex-grow">
-        
-        <!-- Navigation Tabs -->
-        <div class="flex overflow-x-auto space-x-2 border-b border-slate-800 pb-2 mb-6 no-scrollbar">
-            <button onclick="switchTab('field')" id="tab-field" class="tab-btn active px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all bg-emerald-700 text-white shadow-md flex items-center gap-2">
-                <i class="fa-solid fa-shirt"></i> Playing 11 Ground
-            </button>
-            <button onclick="switchTab('squad')" id="tab-squad" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all text-slate-400 hover:bg-slate-800 hover:text-white flex items-center gap-2">
-                <i class="fa-solid fa-users"></i> Full Squad (15 Players)
-            </button>
-            <button onclick="switchTab('matches')" id="tab-matches" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all text-slate-400 hover:bg-slate-800 hover:text-white flex items-center gap-2">
-                <i class="fa-solid fa-clipboard-list"></i> Match Scorecards & Recording
-            </button>
-            <button onclick="switchTab('stats')" id="tab-stats" class="tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all text-slate-400 hover:bg-slate-800 hover:text-white flex items-center gap-2">
-                <i class="fa-solid fa-chart-column"></i> Player Career Stats
-            </button>
-        </div>
+    <main class="w-full flex-grow">
 
-        <!-- TAB 1: PLAYING 11 TACTICAL FIELD -->
-        <section id="view-field" class="space-y-4">
-            <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
-                <div>
-                    <h2 class="text-xl font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-circle text-emerald-500 text-xs"></i> Playing 11 Tactical Field
-                    </h2>
-                    <p class="text-xs text-slate-400">Current starting lineup selected by team management</p>
+        <!-- TAB 1: HOME -->
+        <section id="view-field">
+            <!-- Hero -->
+            <div class="hero">
+                <div class="max-w-[1500px] mx-auto w-full px-6 md:px-10 py-8 relative z-10">
+                    <h2 class="hero-title it">SHAHEEN <span>TEAM</span></h2>
+                    <p class="hero-sub mt-2">Cricket Squad &amp; Match Portal</p>
                 </div>
-                <div class="text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">
-                    Selected Players: <span id="playingCountBadge" class="text-emerald-400 font-bold">11 / 11</span>
-                </div>
+                <div id="heroPlayers" class="hero-players"></div>
             </div>
 
-            <div class="ground-bg rounded-2xl p-4 md:p-8 min-h-[520px] relative overflow-hidden flex flex-col justify-between shadow-2xl">
-                <!-- Center Pitch Graphic -->
-                <div class="absolute inset-0 flex items-center justify-center opacity-30 pointer-events-none">
-                    <div class="w-24 md:w-32 h-64 md:h-80 pitch-rect rounded-sm"></div>
-                </div>
+            <!-- Playing 11 -->
+            <div class="sec-bar">
+                <i class="fa-solid fa-trophy text-3xl" style="color:var(--gold)"></i>
+                <h3 class="sec-title">Playing 11</h3>
+                <span class="text-xs text-slate-300 bg-black/30 border border-white/10 px-3 py-1 rounded-full hidden sm:inline">Selected: <span id="playingCountBadge" class="text-lime-400 font-bold">11 / 11</span></span>
+                <button onclick="switchTab('squad')" class="btn-outline-gold ml-auto">View Full Squad <i class="fa-solid fa-arrow-right ml-1"></i></button>
+            </div>
+            <div class="pitch">
+                <div id="groundGrid" class="relative z-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-5 max-w-[1500px] mx-auto"></div>
+            </div>
 
-                <!-- Ground Players Grid Layout -->
-                <div id="groundGrid" class="relative z-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4 my-auto">
-                    <!-- Populated via JavaScript -->
-                </div>
+            <!-- Squad Roster preview -->
+            <div class="sec-bar mt-0">
+                <i class="fa-solid fa-users text-3xl" style="color:var(--gold)"></i>
+                <h3 class="sec-title">Squad Roster</h3>
+            </div>
+            <div class="max-w-[1500px] mx-auto px-4 py-6">
+                <div id="homeRosterGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5"></div>
             </div>
         </section>
 
         <!-- TAB 2: SQUAD ROSTER (15 PLAYERS) -->
-        <section id="view-squad" class="hidden space-y-4">
+        <section id="view-squad" class="hidden space-y-5 max-w-[1500px] mx-auto px-4 py-6 w-full ">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div>
-                    <h2 class="text-xl font-bold text-white">Squad Roster</h2>
+                    <h2 class="sec-title"><i class="fa-solid fa-users mr-2" style="color:var(--gold)"></i>Squad Roster</h2>
                     <p class="text-xs text-slate-400">Manage player contracts, roles, status, and photos</p>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -170,13 +268,13 @@
             </div>
 
             <!-- Squad Grid -->
-            <div id="squadGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div id="squadGrid" class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-5">
                 <!-- Populated via JavaScript -->
             </div>
         </section>
 
         <!-- TAB 3: MATCH SCORECARDS & RECORDING -->
-        <section id="view-matches" class="hidden space-y-6">
+        <section id="view-matches" class="hidden space-y-6 max-w-[1500px] mx-auto px-4 py-6 w-full ">
             <!-- Record Match Action Box (Admin Only) -->
             <div id="adminMatchFormContainer" class="hidden bg-slate-900 border border-slate-800 rounded-xl p-4 md:p-6 shadow-xl">
                 <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
@@ -202,9 +300,26 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gold mb-1"><i class="fa-solid fa-trophy mr-1"></i> Player of the Match</label>
+                            <select id="mPom" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:border-gold outline-none"></select>
+                        </div>
+                    </div>
+
                     <!-- Selected Performances Entry -->
                     <div class="border-t border-slate-800 pt-4">
                         <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-3">Player Individual Performances</h4>
+                        <p class="text-[11px] text-slate-400 mb-2">Har player (bowler bhi) ki <b class="text-gold">Batting</b> (Runs, Balls) aur <b class="text-emerald-400">Bowling</b> (Wickets, Runs Given, Overs) dono enter ho sakti hain. Jo na khela ho wo khali chhor dein.</p>
+                        <div class="hidden sm:grid grid-cols-7 gap-2 px-3 pb-1 text-[10px] uppercase font-bold tracking-wider">
+                            <div class="text-slate-400">Player</div>
+                            <div class="text-gold">Bat Runs</div>
+                            <div class="text-gold">Balls Faced</div>
+                            <div class="text-emerald-400">Wickets</div>
+                            <div class="text-emerald-400">Runs Given</div>
+                            <div class="text-emerald-400">Overs</div>
+                            <div></div>
+                        </div>
                         <div id="matchPerformancesList" class="space-y-3">
                             <!-- Dynamic Rows Added by JS -->
                         </div>
@@ -233,26 +348,42 @@
         </section>
 
         <!-- TAB 4: PLAYER CAREER STATS -->
-        <section id="view-stats" class="hidden space-y-4">
+        <section id="view-stats" class="hidden space-y-4 max-w-[1500px] mx-auto px-4 py-6 w-full ">
             <div class="flex items-center justify-between flex-wrap gap-2">
                 <div>
-                    <h2 class="text-xl font-bold text-white">Cumulative Career Statistics</h2>
-                    <p class="text-xs text-slate-400">Calculated automatically from all recorded match scorecards</p>
+                    <h2 class="sec-title">Career Statistics</h2>
+                    <p class="text-xs text-slate-400">Calculated automatically from all recorded match scorecards. Every player (bowlers too) has both Batting and Bowling stats.</p>
                 </div>
+            </div>
+
+            <div id="statsFilters" class="flex flex-wrap gap-2">
+                <button onclick="setStatsFilter('all')" data-f="all" class="stat-chip active">All Players</button>
+                <button onclick="setStatsFilter('bat')" data-f="bat" class="stat-chip">Batsmen</button>
+                <button onclick="setStatsFilter('bowl')" data-f="bowl" class="stat-chip">Bowlers (Batting Runs)</button>
+                <button onclick="setStatsFilter('all-rounder')" data-f="all-rounder" class="stat-chip">All-rounders</button>
+                <button onclick="setStatsFilter('wk')" data-f="wk" class="stat-chip">Wicketkeepers</button>
             </div>
 
             <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs md:text-sm text-slate-300">
-                        <thead class="bg-slate-950 text-slate-400 uppercase font-semibold border-b border-slate-800 text-[11px]">
-                            <tr>
+                        <thead class="bg-slate-950 text-slate-400 uppercase font-semibold text-[11px]">
+                            <tr class="border-b border-slate-800">
+                                <th class="p-2" colspan="3"></th>
+                                <th class="p-2 text-center text-gold border-l border-slate-800" colspan="4"><i class="fa-solid fa-baseball-bat-ball mr-1"></i> Batting</th>
+                                <th class="p-2 text-center text-emerald-400 border-l border-slate-800" colspan="5"><i class="fa-solid fa-bullseye mr-1"></i> Bowling</th>
+                            </tr>
+                            <tr class="border-b border-slate-800">
                                 <th class="p-3">Player Name</th>
                                 <th class="p-3">Role</th>
                                 <th class="p-3 text-center">Matches</th>
-                                <th class="p-3 text-center">Runs</th>
+                                <th class="p-3 text-center border-l border-slate-800">Runs</th>
+                                <th class="p-3 text-center">Balls</th>
                                 <th class="p-3 text-center">Highest</th>
                                 <th class="p-3 text-center">Strike Rate</th>
+                                <th class="p-3 text-center border-l border-slate-800">Overs</th>
                                 <th class="p-3 text-center">Wickets</th>
+                                <th class="p-3 text-center">Runs Given</th>
                                 <th class="p-3 text-center">Best Bowling</th>
                                 <th class="p-3 text-center">Economy</th>
                             </tr>
@@ -282,9 +413,13 @@
             </div>
 
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div id="adminEmailWrap" class="hidden">
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Admin Email</label>
+                    <input type="email" id="adminEmailInput" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="username" placeholder="admin@example.com" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold outline-none">
+                </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">Admin Password</label>
-                    <input type="password" id="adminPasswordInput" required placeholder="Enter Password" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold outline-none">
+                    <div class="relative"><input type="password" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" id="adminPasswordInput" required placeholder="Enter Password" class="w-full pr-12 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:border-gold outline-none"><button type="button" onclick="toggleAdminPwd()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-sm"><i class="fa-solid fa-eye"></i></button></div>
                 </div>
                 <div id="adminLoginError" class="text-red-400 text-xs hidden">Incorrect password. Please try again.</div>
                 <button type="submit" class="w-full bg-gold hover:bg-gold-hover text-slate-950 font-bold py-2.5 rounded-xl text-sm transition-all shadow-lg">
@@ -369,37 +504,93 @@
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 text-center text-xs text-slate-500 mt-8">
-        <p>Cricket Squad & Match Data Portal &copy; 2026 | Website Developed by <span class="text-slate-400 font-semibold">Muhammad Zahid</span></p>
+    <footer class="site-footer mt-8">
+        <div class="max-w-[1500px] mx-auto px-4 pt-4 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <a href="#" class="soc" style="background:#1877f2" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" class="soc" style="background:#ff0000" aria-label="YouTube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="#" class="soc" style="background:#1d9bf0" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="soc" style="background:linear-gradient(45deg,#f9a825,#e1306c,#833ab4)" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+            </div>
+            <div class="flex items-center gap-3 text-lg md:text-2xl italic font-semibold text-white">
+                <span class="hidden md:inline text-gold tracking-widest">★ ★ ★</span>
+                Shaheen Team – Stronger Together
+                <span class="hidden md:inline text-gold tracking-widest">★ ★ ★</span>
+            </div>
+            <div class="passion text-white flex items-center gap-3"><i class="fa-solid fa-baseball text-2xl"></i> Cricket is Our Passion</div>
+        </div>
+        <div class="text-center py-3 border-t border-white/5">
+            <div class="flex items-center justify-center gap-3">
+                <span class="h-px w-10 md:w-24" style="background:linear-gradient(90deg,transparent,#f5b301)"></span>
+                <i class="fa-solid fa-code text-gold"></i>
+                <span class="dev-credit text-2xl md:text-3xl">Developed by Muhammad Zahid</span>
+                <i class="fa-solid fa-code text-gold"></i>
+                <span class="h-px w-10 md:w-24" style="background:linear-gradient(90deg,#f5b301,transparent)"></span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-1">Cricket Squad &amp; Match Data Portal &copy; 2026</p>
+        </div>
     </footer>
 
     <!-- Firebase Standard Imports -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, getDocs, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Setup configuration
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'cricket-portal-default';
-        // YOUR REAL FIREBASE WEB APP CONFIG GOES HERE.
-        // Replace the six placeholder values below with the config
-        // Firebase gives you when you register your Web App.
-        const firebaseConfig = typeof __firebase_config !== 'undefined'
-            ? JSON.parse(__firebase_config)
-            : {
-                apiKey: "AIzaSyD8ObOI0_NBTsyUa_u2hq3GgiaVUBVlIoE",
+    <script>
+        /* ==========================================================================
+           FIREBASE SETTINGS  —  SIRF YAHAN APNI FIREBASE KI VALUES PASTE KAREIN
+           --------------------------------------------------------------------------
+           Firebase Console > Project settings > Your apps > Web app > Config
+           Har value ko "double quotes" ke andar rakhein, aur har line ke aakhir mein
+           comma (,) rehne dein. Is box ke ilawa kuch change karne ki zaroorat nahi.
+           ZAROORI: Firebase ke snippet se sirf { ... } wala hissa lein. Us ki "import ..."
+           aur "const app = initializeApp(...)" wali lines YAHAN PASTE NA KAREIN.
+           ========================================================================== */
+        const firebaseConfig = {
+             apiKey: "AIzaSyD8ObOI0_NBTsyUa_u2hq3GgiaVUBVlIoE",
   authDomain: "crocker323-4856c.firebaseapp.com",
   projectId: "crocker323-4856c",
   storageBucket: "crocker323-4856c.firebasestorage.app",
   messagingSenderId: "814547009601",
   appId: "1:814547009601:web:096f4e6ce1d49be7dcc6c0",
-  measurementId: "G-GC3PQXQERB"
-            };
+  measurementId: "G-GC3PQXQERB"   // optional
+        };
+        /* ======================= END OF FIREBASE SETTINGS ======================= */
+    </script>
+
+    <script>
+        // Reads the settings above. If they are missing/broken, the site runs in Offline mode.
+        const firebaseCfg = (typeof firebaseConfig !== 'undefined' && firebaseConfig) ? firebaseConfig : {};
+        const cloudConfigured = !!(firebaseCfg.apiKey && !/PASTE|YOUR_/i.test(firebaseCfg.apiKey));
+
+        let initializeApp, getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged;
+        let getFirestore, doc, setDoc, onSnapshot, collection, getDocs, getDoc, deleteDoc;
+        let firebaseReady = false;
+
+        // App id (leave as it is)
+        const appId = 'cricket-portal-default';
 
         // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        let app, auth, db;
+        // Firebase is loaded safely: if the config is empty or loading fails,
+        // the site still works (offline mode) instead of every button dying.
+        async function bootFirebase() {
+            if (!cloudConfigured) return;
+            try {
+                const load = Promise.all([
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js"),
+                    import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js")
+                ]);
+                const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('Firebase load timeout')), 10000));
+                const [fa, fau, ffs] = await Promise.race([load, timeout]);
+                ({ initializeApp } = fa);
+                ({ getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } = fau);
+                ({ getFirestore, doc, setDoc, onSnapshot, collection, getDocs, getDoc, deleteDoc } = ffs);
+                app = initializeApp(firebaseCfg);
+                auth = getAuth(app);
+                db = getFirestore(app);
+                firebaseReady = true;
+            } catch (err) {
+                console.error('Firebase could not start, using offline mode:', err);
+            }
+        }
 
         // State Variables
         let currentUser = null;
@@ -426,64 +617,47 @@
             { id: "p15", name: "Wasim Jr", role: "Fast Bowler", leadership: "None", status: "Injured", playing11: false, photo: "https://placehold.co/150x150/1b4332/e2e8f0?text=Wasim" }
         ];
 
-        // Authenticate User First (RULE 3)
-        async function initAuth() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (err) {
-                console.error("Auth Error:", err);
-            }
+        // Only the admin (Firebase email+password account) can edit.
+        // Visitors are never signed in: they can only READ data.
+        function registerAuthListener() {
+            onAuthStateChanged(auth, (user) => {
+                currentUser = (user && !user.isAnonymous) ? user : null;
+                isAdmin = !!currentUser;
+                if (isAdmin) seedIfEmpty();
+                renderAll();
+                try { populateMatchPerformanceRows(); } catch (err) { console.error(err); }
+            });
         }
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                setupFirestoreListeners();
+        // Admin only: fill the database with the default squad the very first time
+        async function seedIfEmpty() {
+            try {
+                const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data', 'players');
+                const legacySquadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
+                const playerDocs = await getDocs(playersCollectionRef);
+                if (!playerDocs.empty) return;
+                const legacySnap = await getDoc(legacySquadDocRef);
+                const list = (legacySnap.exists() && legacySnap.data().players) ? legacySnap.data().players : defaultSquad;
+                await Promise.all(list.map(p => setDoc(doc(playersCollectionRef, p.id), p, { merge: true })));
+            } catch (err) {
+                console.error('Seed error:', err);
             }
-        });
+        }
 
         // Setup Real-time Firestore Listeners
         // Player data is stored one player per Firestore document.
         // This is important because photos are base64 data and putting all
         // 15 photos inside one document can hit Firestore's 1 MB document limit.
         async function setupFirestoreListeners() {
-            if (!currentUser) return;
-
             const playersCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data', 'players');
-            const legacySquadDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'squad_data');
-
-            // First migrate old squad_data (if it exists) into individual player docs.
-            try {
-                const playerDocs = await getDocs(playersCollectionRef);
-                if (playerDocs.empty) {
-                    const legacySnap = await getDoc(legacySquadDocRef);
-                    if (legacySnap.exists() && legacySnap.data().players) {
-                        const oldPlayers = legacySnap.data().players;
-                        await Promise.all(oldPlayers.map(p =>
-                            setDoc(doc(playersCollectionRef, p.id), p, { merge: true })
-                        ));
-                    } else {
-                        await Promise.all(defaultSquad.map(p =>
-                            setDoc(doc(playersCollectionRef, p.id), p, { merge: true })
-                        ));
-                    }
-                }
-            } catch (err) {
-                console.error('Player migration/initialization error:', err);
-                if (squadData.length === 0) {
-                    squadData = defaultSquad;
-                    renderAll();
-                }
-            }
 
             onSnapshot(playersCollectionRef, (snapshot) => {
                 const players = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
                 if (players.length > 0) {
                     squadData = players;
+                    renderAll();
+                } else if (!squadData.length) {
+                    squadData = defaultSquad;
                     renderAll();
                 }
             }, (error) => {
@@ -515,6 +689,7 @@
             const oldSquad = Array.isArray(squadData) ? squadData : [];
             squadData = newSquad;
             renderAll();
+            persistLocal();
             if (!currentUser) return;
 
             try {
@@ -541,6 +716,7 @@
             matchData = newMatches;
             renderMatchHistory();
             renderCareerStats();
+            persistLocal();
             if (!currentUser) return;
             try {
                 const matchDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_state', 'match_data');
@@ -552,74 +728,77 @@
 
         // UI Render Master Controller
         function renderAll() {
-            renderPlaying11Ground();
-            renderSquadGrid();
-            renderMatchHistory();
-            renderCareerStats();
-            updateUIState();
+            [renderPlaying11Ground, renderSquadGrid, fillPomSelect, renderMatchHistory, renderCareerStats, updateUIState].forEach(fn => {
+                try { fn(); } catch (err) { console.error('Render error in ' + fn.name + ':', err); }
+            });
         }
 
-        // Render Playing 11 Ground (Tab 1)
+        // Helpers for the new design
+        function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function shortRole(r) {
+            r = r || '';
+            if (/wicket/i.test(r)) return 'Wicketkeeper';
+            if (/all/i.test(r)) return 'All-rounder';
+            if (/bat/i.test(r)) return 'Batsman';
+            if (/bowl/i.test(r)) return 'Bowler';
+            return r;
+        }
+        const PH = 'https://placehold.co/400x500/10213f/e2e8f0?text=Player';
+
+        // Render Playing 11 (Home) in the new pitch strip
         function renderPlaying11Ground() {
             const groundContainer = document.getElementById('groundGrid');
             const playing11 = squadData.filter(p => p.playing11);
-            
-            document.getElementById('playingCountBadge').innerText = `${playing11.length} Selected`;
+            document.getElementById('playingCountBadge').innerText = `${playing11.length} / 11`;
 
             if (playing11.length === 0) {
-                groundContainer.innerHTML = `<div class="col-span-full text-center py-12 text-slate-300 font-medium">No players currently selected in Playing 11.</div>`;
-                return;
+                groundContainer.innerHTML = `<div class="col-span-full text-center py-10 text-white font-semibold">No players currently selected in Playing 11.</div>`;
+            } else {
+                groundContainer.innerHTML = playing11.map(p => rosterCard(p, false, true)).join('');
             }
 
-            groundContainer.innerHTML = playing11.map(p => `
-                <div class="bg-slate-900/90 border border-emerald-500/40 hover:border-emerald-400 rounded-xl p-3 text-center flex flex-col items-center justify-center relative shadow-lg backdrop-blur-sm transition-transform hover:-translate-y-1">
-                    ${p.leadership === 'Captain' ? `<span class="absolute top-2 right-2 bg-gold text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded shadow">C</span>` : ''}
-                    ${p.leadership === 'Vice-Captain' ? `<span class="absolute top-2 right-2 bg-amber-200 text-slate-950 text-[10px] font-black px-1.5 py-0.5 rounded shadow">VC</span>` : ''}
-                    <div class="w-16 h-16 rounded-full overflow-hidden border-2 border-gold/70 shadow-md mb-2 bg-slate-950">
-                        <img src="${p.photo}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/1e293b/e2e8f0?text=Player'">
-                    </div>
-                    <h4 class="font-bold text-xs text-white truncate w-full">${p.name}</h4>
-                    <span class="text-[10px] text-emerald-400 font-medium">${p.role}</span>
-                </div>
-            `).join('');
+            // Hero player collage (first 5 from Playing 11, or squad)
+            const heroEl = document.getElementById('heroPlayers');
+            if (heroEl) {
+                const pool = (playing11.length ? playing11 : squadData).slice(0, 5);
+                const cls = ['', 'm', 'c', 'm', ''];
+                heroEl.innerHTML = pool.map((p, i) => `<img class="hero-player ${pool.length === 5 ? cls[i] : ''}" src="${esc(p.photo)}" alt="${esc(p.name)}" onerror="this.src='${PH}'">`).join('');
+            }
         }
 
-        // Render Squad Grid (Tab 2)
+        // Shared big roster card
+        function rosterCard(p, withAdmin, hideP11) {
+            return `
+                <article class="roster-card group">
+                    ${p.leadership === 'Captain' ? `<span class="badge-pill" style="top:10px;left:10px;background:var(--gold);color:#0a1226">C • CAPTAIN</span>` : ''}
+                    ${p.leadership === 'Vice-Captain' ? `<span class="badge-pill" style="top:10px;left:10px;background:#fde68a;color:#0a1226">VC • VICE CAPTAIN</span>` : ''}
+                    ${(p.playing11 && !hideP11) ? `<span class="badge-pill" style="top:10px;right:10px;background:rgba(82,224,15,.92);color:#04210a">PLAYING 11</span>` : ''}
+                    <img src="${esc(p.photo)}" alt="${esc(p.name)}" onerror="this.src='${PH}'">
+                    <div class="roster-label">
+                        <b>${esc(p.name)}</b>
+                        <span>${esc(shortRole(p.role))}</span>
+                        ${withAdmin ? `<em class="not-italic text-[10px] px-2 py-0.5 rounded-full inline-block mt-1 ${getStatusBadgeClass(p.status)}">${esc(p.status)}</em>` : ''}
+                    </div>
+                </article>`;
+        }
+
+        // Render Squad Grid (Our Team tab) + home roster preview
         function renderSquadGrid() {
+            const homeGrid = document.getElementById('homeRosterGrid');
+            if (homeGrid) homeGrid.innerHTML = squadData.slice(0, 5).map(p => rosterCard(p, false)).join('');
+
             const squadContainer = document.getElementById('squadGrid');
             squadContainer.innerHTML = squadData.map(p => `
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col justify-between shadow-lg relative group">
-                    <div class="flex items-start space-x-3">
-                        <div class="w-14 h-14 rounded-full overflow-hidden border border-slate-700 bg-slate-950 flex-shrink-0">
-                            <img src="${p.photo}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x150/1e293b/e2e8f0?text=Player'">
-                        </div>
-                        <div class="flex-grow min-w-0">
-                            <div class="flex items-center space-x-1">
-                                <h4 class="font-bold text-sm text-white truncate">${p.name}</h4>
-                                ${p.leadership === 'Captain' ? `<span class="bg-gold text-slate-950 text-[9px] font-extrabold px-1 rounded">C</span>` : ''}
-                                ${p.leadership === 'Vice-Captain' ? `<span class="bg-amber-200 text-slate-950 text-[9px] font-extrabold px-1 rounded">VC</span>` : ''}
-                            </div>
-                            <p class="text-xs text-gold font-medium">${p.role}</p>
-                            <div class="flex items-center space-x-2 mt-1">
-                                <span class="text-[10px] px-2 py-0.5 rounded-full ${getStatusBadgeClass(p.status)} font-medium">
-                                    ${p.status}
-                                </span>
-                                ${p.playing11 ? `<span class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> Playing 11</span>` : ''}
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="rounded-2xl overflow-hidden" style="background:#0a1a38">
+                    ${rosterCard(p, true)}
                     ${isAdmin ? `
-                        <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
-                            <button onclick="togglePlaying11('${p.id}')" class="text-xs px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-medium">
-                                ${p.playing11 ? 'Remove Playing 11' : 'Set Playing 11'}
-                            </button>
-                            <div class="flex space-x-1">
-                                <button onclick="openPlayerModal('${p.id}')" class="p-1.5 text-gold hover:text-white"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="deletePlayer('${p.id}')" class="p-1.5 text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+                        <div class="admin-bar">
+                            <button onclick="togglePlaying11('${p.id}')" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold">${p.playing11 ? 'Remove from 11' : 'Set Playing 11'}</button>
+                            <div class="flex gap-2">
+                                <button onclick="openPlayerModal('${p.id}')" class="w-8 h-8 rounded-lg bg-gold/10 text-gold hover:bg-gold hover:text-slate-950"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="deletePlayer('${p.id}')" class="w-8 h-8 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white"><i class="fa-solid fa-trash"></i></button>
                             </div>
-                        </div>
-                    ` : ''}
+                        </div>` : ''}
                 </div>
             `).join('');
         }
@@ -631,6 +810,46 @@
         }
 
         // Render Matches History (Tab 3)
+        function fillPomSelect() {
+            const sel = document.getElementById('mPom');
+            if (!sel) return;
+            const cur = sel.value;
+            sel.innerHTML = '<option value="">— Select Player of the Match —</option>' +
+                squadData.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+            sel.value = cur;
+        }
+
+        // Player of the Match card: photo + what he did in that match
+        function pomBlock(m) {
+            if (!m.pomId && !m.pomName) return '';
+            const pl = squadData.find(x => x.id === m.pomId);
+            const name = pl ? pl.name : (m.pomName || 'Player');
+            const photo = pl && pl.photo ? pl.photo : PH;
+            const role = pl ? shortRole(pl.role) : '';
+            let runs = 0, balls = 0, wk = 0, br = 0, bb = 0, found = false;
+            (m.performances || []).filter(x => x.playerId === m.pomId).forEach(x => {
+                found = true;
+                runs += Number(x.runs || 0); balls += Number(x.balls || 0);
+                wk += Number(x.wickets || 0); br += Number(x.bowlRuns || 0); bb += oversToBalls(x.overs);
+            });
+            const batted = runs > 0 || balls > 0;
+            const bowled = wk > 0 || br > 0 || bb > 0;
+            const chips = [];
+            if (batted) chips.push(`<span class="pom-chip text-gold"><i class="fa-solid fa-baseball-bat-ball mr-1"></i>Batting: <b>${runs}</b> (${balls} balls) &bull; SR ${balls > 0 ? ((runs / balls) * 100).toFixed(1) : '-'}</span>`);
+            if (bowled) chips.push(`<span class="pom-chip text-emerald-300"><i class="fa-solid fa-bullseye mr-1"></i>Bowling: <b>${wk}/${br}</b> (${ballsToOvers(bb)} ov) &bull; Econ ${bb > 0 ? (br / (bb / 6)).toFixed(2) : '-'}</span>`);
+            if (!chips.length) chips.push(`<span class="pom-chip text-slate-400">${found ? 'Did not bat or bowl' : 'Performance not recorded'}</span>`);
+            return `
+                <div class="pom-card">
+                    <img class="pom-photo" src="${esc(photo)}" alt="${esc(name)}" onerror="this.src='${PH}'">
+                    <div class="min-w-0">
+                        <span class="pom-tag"><i class="fa-solid fa-trophy"></i> Player of the Match</span>
+                        <h4 class="text-lg md:text-xl font-bold text-white mt-1 truncate">${esc(name)}</h4>
+                        ${role ? `<p class="text-xs text-lime-400 font-semibold">${esc(role)}</p>` : ''}
+                        <div class="flex flex-wrap gap-2 mt-2">${chips.join('')}</div>
+                    </div>
+                </div>`;
+        }
+
         function renderMatchHistory() {
             const container = document.getElementById('matchHistoryList');
             if (matchData.length === 0) {
@@ -647,6 +866,8 @@
                         </div>
                         ${isAdmin ? `<button onclick="deleteMatch(${idx})" class="text-xs text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>` : ''}
                     </div>
+
+                    ${pomBlock(m)}
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs text-slate-300">
@@ -681,66 +902,81 @@
         }
 
         // Render Career Stats Table (Tab 4)
+        let statsFilter = 'all';
+        window.setStatsFilter = function(f) {
+            statsFilter = f;
+            document.querySelectorAll('#statsFilters .stat-chip').forEach(b => b.classList.toggle('active', b.dataset.f === f));
+            renderCareerStats();
+        };
+
+        // overs like 3.4 mean 3 overs + 4 balls, so convert to balls before adding
+        function oversToBalls(o) { o = Number(o || 0); const w = Math.floor(o); return w * 6 + Math.round((o - w) * 10); }
+        function ballsToOvers(b) { return Math.floor(b / 6) + (b % 6 ? '.' + (b % 6) : ''); }
+
+        function roleMatchesFilter(role, f) {
+            role = role || '';
+            if (f === 'all') return true;
+            if (f === 'wk') return /wicket/i.test(role);
+            if (f === 'all-rounder') return /all/i.test(role);
+            if (f === 'bowl') return /bowl/i.test(role);
+            if (f === 'bat') return /bat/i.test(role);
+            return true;
+        }
+
+        // Render Career Stats Table (Tab 4) - batting AND bowling for every player
         function renderCareerStats() {
             const tbody = document.getElementById('careerStatsTableBody');
-            
-            // Calculate stats for all players
+            if (!tbody) return;
+
             const statsMap = {};
             squadData.forEach(p => {
-                statsMap[p.id] = {
-                    name: p.name,
-                    role: p.role,
-                    matches: 0,
-                    runs: 0,
-                    balls: 0,
-                    highest: 0,
-                    wickets: 0,
-                    bowlRuns: 0,
-                    overs: 0,
-                    bestWickets: 0,
-                    bestBowlRuns: 999
-                };
+                statsMap[p.id] = { name: p.name, role: p.role, matches: 0, runs: 0, balls: 0, highest: 0,
+                                   wickets: 0, bowlRuns: 0, ballsBowled: 0, bestWickets: 0, bestBowlRuns: 0 };
             });
 
             matchData.forEach(m => {
-                m.performances.forEach(perf => {
+                (m.performances || []).forEach(perf => {
                     const p = statsMap[perf.playerId];
-                    if (p) {
-                        p.matches += 1;
-                        p.runs += Number(perf.runs || 0);
-                        p.balls += Number(perf.balls || 0);
-                        if (Number(perf.runs) > p.highest) p.highest = Number(perf.runs);
-
-                        p.wickets += Number(perf.wickets || 0);
-                        p.bowlRuns += Number(perf.bowlRuns || 0);
-                        p.overs += Number(perf.overs || 0);
-
-                        if (Number(perf.wickets) > p.bestWickets) {
-                            p.bestWickets = Number(perf.wickets);
-                            p.bestBowlRuns = Number(perf.bowlRuns);
-                        }
+                    if (!p) return;
+                    const runs = Number(perf.runs || 0), wk = Number(perf.wickets || 0), br = Number(perf.bowlRuns || 0);
+                    p.matches += 1;
+                    p.runs += runs;
+                    p.balls += Number(perf.balls || 0);
+                    if (runs > p.highest) p.highest = runs;
+                    p.wickets += wk;
+                    p.bowlRuns += br;
+                    p.ballsBowled += oversToBalls(perf.overs);
+                    if (wk > p.bestWickets || (wk === p.bestWickets && wk > 0 && br < p.bestBowlRuns)) {
+                        p.bestWickets = wk; p.bestBowlRuns = br;
                     }
                 });
             });
 
-            tbody.innerHTML = Object.values(statsMap).map(s => {
-                const sr = s.balls > 0 ? ((s.runs / s.balls) * 100).toFixed(1) : '0.0';
-                const econ = s.overs > 0 ? (s.bowlRuns / s.overs).toFixed(2) : '0.00';
-                const bestB = s.bestWickets > 0 ? `${s.bestWickets}/${s.bestBowlRuns}` : '-';
+            const rows = Object.values(statsMap).filter(s => roleMatchesFilter(s.role, statsFilter));
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="p-6 text-center text-slate-400">No players in this group.</td></tr>`;
+                return;
+            }
 
+            tbody.innerHTML = rows.map(s => {
+                const sr = s.balls > 0 ? ((s.runs / s.balls) * 100).toFixed(1) : '0.0';
+                const econ = s.ballsBowled > 0 ? (s.bowlRuns / (s.ballsBowled / 6)).toFixed(2) : '0.00';
+                const bestB = s.bestWickets > 0 ? `${s.bestWickets}/${s.bestBowlRuns}` : '-';
                 return `
                     <tr class="hover:bg-slate-800/40 transition-colors">
-                        <td class="p-3 font-semibold text-white flex items-center gap-2">${s.name}</td>
-                        <td class="p-3 text-slate-400">${s.role}</td>
+                        <td class="p-3 font-semibold text-white">${esc(s.name)}</td>
+                        <td class="p-3 text-slate-400">${esc(s.role)}</td>
                         <td class="p-3 text-center font-bold text-slate-300">${s.matches}</td>
-                        <td class="p-3 text-center text-gold font-bold">${s.runs}</td>
+                        <td class="p-3 text-center text-gold font-bold border-l border-slate-800">${s.runs}</td>
+                        <td class="p-3 text-center text-slate-300">${s.balls}</td>
                         <td class="p-3 text-center text-slate-300">${s.highest}</td>
                         <td class="p-3 text-center text-amber-300">${sr}</td>
+                        <td class="p-3 text-center text-slate-300 border-l border-slate-800">${ballsToOvers(s.ballsBowled)}</td>
                         <td class="p-3 text-center text-emerald-400 font-bold">${s.wickets}</td>
+                        <td class="p-3 text-center text-slate-300">${s.bowlRuns}</td>
                         <td class="p-3 text-center text-slate-300">${bestB}</td>
                         <td class="p-3 text-center text-emerald-300">${econ}</td>
-                    </tr>
-                `;
+                    </tr>`;
             }).join('');
         }
 
@@ -748,10 +984,11 @@
         window.openAdminModal = function() {
             if (isAdmin) {
                 // Logout
-                isAdmin = false;
-                renderAll();
+                if (firebaseReady && auth) { signOut(auth).catch(err => console.error(err)); }
+                else { isAdmin = false; renderAll(); }
                 return;
             }
+            document.getElementById('adminEmailWrap').classList.toggle('hidden', !firebaseReady);
             document.getElementById('adminModal').classList.remove('hidden');
         };
 
@@ -760,17 +997,48 @@
             document.getElementById('adminLoginError').classList.add('hidden');
         };
 
-        window.handleAdminLogin = function(e) {
+        window.handleAdminLogin = async function(e) {
             e.preventDefault();
-            const pwd = document.getElementById('adminPasswordInput').value;
+            const input = document.getElementById('adminPasswordInput');
+            const errEl = document.getElementById('adminLoginError');
+            const pwd = (input.value || '').trim();
+            errEl.classList.add('hidden');
+
+            if (firebaseReady) {
+                // Real login: Firebase checks the email + password on the server
+                const email = (document.getElementById('adminEmailInput').value || '').trim();
+                if (!email) { errEl.innerText = 'Please enter the admin email.'; errEl.classList.remove('hidden'); return; }
+                try {
+                    await signInWithEmailAndPassword(auth, email, pwd);
+                    input.value = '';
+                    closeAdminModal();
+                    switchTab('squad');
+                } catch (err) {
+                    console.error(err);
+                    errEl.innerText = (err && /invalid|wrong|user-not-found|credential/i.test(err.code || ''))
+                        ? 'Incorrect email or password.' : 'Login failed: ' + ((err && err.code) || 'unknown error');
+                    errEl.classList.remove('hidden');
+                }
+                return;
+            }
+
+            // Offline mode only (no Firebase): local password, edits stay in this browser only
             if (pwd === 'zahid12345') {
                 isAdmin = true;
+                input.value = '';
                 closeAdminModal();
                 renderAll();
-                populateMatchPerformanceRows();
+                try { populateMatchPerformanceRows(); } catch (err) { console.error(err); }
+                switchTab('squad');
             } else {
-                document.getElementById('adminLoginError').classList.remove('hidden');
+                errEl.innerText = 'Incorrect password. Please try again.';
+                errEl.classList.remove('hidden');
             }
+        };
+
+        window.toggleAdminPwd = function() {
+            const i = document.getElementById('adminPasswordInput');
+            i.type = i.type === 'password' ? 'text' : 'password';
         };
 
         function updateUIState() {
@@ -948,33 +1216,20 @@
             addPerformanceRow();
         };
 
+        // Every player can have BOTH batting and bowling stats, regardless of role.
         window.addPerformanceRow = function() {
             const container = document.getElementById('matchPerformancesList');
             const rowId = "row_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4);
-
             const div = document.createElement('div');
-            div.className = "grid grid-cols-2 sm:grid-cols-6 gap-2 bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs items-center";
+            div.className = "grid grid-cols-2 sm:grid-cols-7 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-xs items-center";
             div.id = rowId;
-
             div.innerHTML = `
-                <div class="col-span-2 sm:col-span-2">
-                    <select class="mPlayerSelect w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-white">
-                        ${squadData.map(p => `<option value="${p.id}">${p.name} (${p.role})</option>`).join('')}
-                    </select>
-                </div>
-                <div>
-                    <input type="number" placeholder="Runs" class="mRuns w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-white">
-                </div>
-                <div>
-                    <input type="number" placeholder="Balls" class="mBalls w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-white">
-                </div>
-                <div>
-                    <input type="number" placeholder="Wkts" class="mWkts w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-white">
-                </div>
-                <div class="flex items-center space-x-1">
-                    <input type="number" step="0.1" placeholder="Overs" class="mOvers w-full bg-slate-900 border border-slate-800 rounded px-2 py-1 text-white">
-                    <button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-red-400 p-1 hover:text-red-300"><i class="fa-solid fa-circle-xmark"></i></button>
-                </div>
+                <div class="col-span-2 sm:col-span-1"><select class="mPlayerSelect w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white">${squadData.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}</select></div>
+                <div><input type="number" min="0" placeholder="Bat Runs" class="mRuns w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white"></div>
+                <div><input type="number" min="0" placeholder="Balls Faced" class="mBalls w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white"></div>
+                <div><input type="number" min="0" placeholder="Wickets" class="mWkts w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white"></div>
+                <div><input type="number" min="0" placeholder="Runs Given" class="mBowlRuns w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white"></div>
+                <div class="flex items-center gap-1"><input type="number" min="0" step="0.1" placeholder="Overs" class="mOvers w-full bg-slate-900 border border-slate-800 rounded px-2 py-2 text-white"><button type="button" onclick="document.getElementById('${rowId}').remove()" class="text-red-400 p-1 hover:text-red-300"><i class="fa-solid fa-circle-xmark"></i></button></div>
             `;
             container.appendChild(div);
         };
@@ -984,36 +1239,29 @@
             const opponent = document.getElementById('mOpponent').value;
             const date = document.getElementById('mDate').value;
             const result = document.getElementById('mResult').value;
-
             const rows = document.querySelectorAll('#matchPerformancesList > div');
             const performances = [];
 
             rows.forEach(r => {
                 const playerId = r.querySelector('.mPlayerSelect').value;
                 const pObj = squadData.find(x => x.id === playerId);
-                const runs = r.querySelector('.mRuns').value || 0;
-                const balls = r.querySelector('.mBalls').value || 0;
-                const wickets = r.querySelector('.mWkts').value || 0;
-                const overs = r.querySelector('.mOvers').value || 0;
-                const bowlRuns = wickets > 0 || overs > 0 ? (Math.random() * 30 + 10).toFixed(0) : 0; // standard estimation fallback
-
                 performances.push({
                     playerId,
                     playerName: pObj ? pObj.name : 'Unknown',
-                    runs: Number(runs),
-                    balls: Number(balls),
-                    wickets: Number(wickets),
-                    overs: Number(overs),
-                    bowlRuns: Number(bowlRuns)
+                    runs: Number(r.querySelector('.mRuns').value || 0),
+                    balls: Number(r.querySelector('.mBalls').value || 0),
+                    wickets: Number(r.querySelector('.mWkts').value || 0),
+                    bowlRuns: Number(r.querySelector('.mBowlRuns').value || 0),
+                    overs: Number(r.querySelector('.mOvers').value || 0)
                 });
             });
 
-            const newMatch = { opponent, date, result, performances };
-            const updatedMatches = [newMatch, ...matchData];
-
+            const pomId = (document.getElementById('mPom') || {}).value || '';
+            const pomPlayer = squadData.find(x => x.id === pomId);
+            const newMatch = { opponent, date, result, performances, pomId, pomName: pomPlayer ? pomPlayer.name : '' };
             document.getElementById('matchRecordForm').reset();
             populateMatchPerformanceRows();
-            await saveMatchesToCloud(updatedMatches);
+            await saveMatchesToCloud([newMatch, ...matchData]);
         };
 
         window.deleteMatch = async function(idx) {
@@ -1026,13 +1274,11 @@
         // Tab Switcher
         window.switchTab = function(tabName) {
             document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(b => {
-                b.className = "tab-btn px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all text-slate-400 hover:bg-slate-800 hover:text-white flex items-center gap-2";
-            });
-
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(`view-${tabName}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-${tabName}`);
-            activeBtn.className = "tab-btn active px-4 py-2.5 rounded-lg font-semibold text-sm whitespace-nowrap transition-all bg-emerald-700 text-white shadow-md flex items-center gap-2";
+            if (activeBtn) activeBtn.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         };
 
         // Backup Export / Import
@@ -1067,8 +1313,42 @@
             reader.readAsText(file);
         };
 
+        // Offline / local mode (used when Firebase is not configured or fails)
+        function persistLocal() {
+            if (firebaseReady) return;
+            try {
+                localStorage.setItem('shaheen_squad', JSON.stringify(squadData));
+                localStorage.setItem('shaheen_matches', JSON.stringify(matchData));
+            } catch (e) { console.warn('Local save failed (photos may be too large):', e); }
+        }
+
+        function startLocalMode() {
+            try { squadData = JSON.parse(localStorage.getItem('shaheen_squad') || 'null') || defaultSquad; } catch (e) { squadData = defaultSquad; }
+            try { matchData = JSON.parse(localStorage.getItem('shaheen_matches') || 'null') || []; } catch (e) { matchData = []; }
+            const badge = document.getElementById('syncStatusBadge');
+            if (badge) badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>Offline';
+            renderAll();
+        }
+
         // Start Auth & Application
-        initAuth();
+        const hasCloudConfig = cloudConfigured;
+        if (!hasCloudConfig) {
+            startLocalMode();
+        } else {
+            renderAll();
+            bootFirebase().then(() => {
+                if (firebaseReady) {
+                    const badge = document.getElementById('syncStatusBadge');
+                    if (badge) badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>Live';
+                    registerAuthListener();
+                    setupFirestoreListeners();
+                } else {
+                    startLocalMode();
+                }
+            });
+            // Safety net: if cloud data never arrives, fall back to local data
+            setTimeout(() => { if (!squadData.length) startLocalMode(); }, 12000);
+        }
     </script>
 </body>
 </html>
